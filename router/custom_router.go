@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"github.com/praveen001/quest-server/controllers"
+	"github.com/praveen001/go-boilerplate/controllers"
 
 	"github.com/gorilla/mux"
 )
@@ -28,17 +28,17 @@ func (cr *CustomRouter) use(path string, subRouter func(*CustomRouter)) {
 }
 
 func (cr *CustomRouter) get(path string, handler http.HandlerFunc) {
-	cr.bindHandler(path, handler, "GET")
+	cr.bindHandler(path, handler, http.MethodGet)
 }
 
 func (cr *CustomRouter) post(path string, handler http.HandlerFunc) {
-	cr.bindHandler(path, handler, "POST")
+	cr.bindHandler(path, handler, http.MethodPost)
 }
 
 func (cr *CustomRouter) put(path string, handler http.HandlerFunc) {
-	cr.bindHandler(path, handler, "PUT")
+	cr.bindHandler(path, handler, http.MethodPut)
 }
 
 func (cr *CustomRouter) delete(path string, handler http.HandlerFunc) {
-	cr.bindHandler(path, handler, "PUT")
+	cr.bindHandler(path, handler, http.MethodDelete)
 }

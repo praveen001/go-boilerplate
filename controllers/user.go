@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/praveen001/quest-server/models"
+	"github.com/praveen001/go-boilerplate/models"
 )
 
 // RegisterUser creates a new user in database
@@ -16,10 +16,12 @@ func (c *AppContext) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := c.DB.Save(user).Error; err != nil {
-		log.Println("Unable to register", err.Error())
-		return
-	}
+	c.DB.AddUser(&models.User{})
+
+	// if err := c.DB.Save(user).Error; err != nil {
+	// 	log.Println("Unable to register", err.Error())
+	// 	return
+	// }
 
 	w.Write([]byte("Test"))
 }

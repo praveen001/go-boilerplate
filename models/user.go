@@ -9,3 +9,7 @@ type User struct {
 	gorm.Model
 	Name string `json:"name"`
 }
+
+func (db DB) AddUser(u *User) {
+	db.db.Get(u.Name)
+}

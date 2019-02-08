@@ -9,14 +9,13 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/praveen001/quest-server/models"
+	"github.com/praveen001/go-boilerplate/models"
 
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
-	"github.com/praveen001/quest-server/controllers"
+	"github.com/praveen001/go-boilerplate/controllers"
 
-	"github.com/praveen001/quest-server/router"
+	"github.com/praveen001/go-boilerplate/router"
 
 	"github.com/spf13/viper"
 )
@@ -34,11 +33,7 @@ func init() {
 
 func main() {
 	// MySQL
-	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@%s/%s?parseTime=true", viper.GetString("MYSQL.USER"), viper.GetString("MYSQL.PASSWORD"), viper.GetString("MYSQL.HOST"), viper.GetString("MYSQL.DATABASE")))
-	if err != nil {
-		log.Fatalln("Unable to connect to database", err.Error())
-	}
-	db.AutoMigrate(&models.User{})
+	db := models.InitDB()
 	defer db.Close()
 
 	appContext := &controllers.AppContext{
