@@ -9,11 +9,13 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 
 	"github.com/praveen001/go-boilerplate/models"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
 	"github.com/praveen001/go-boilerplate/controllers"
@@ -35,27 +37,22 @@ func init() {
 }
 
 func main() {
-	// MySQL
-	db := models.InitDB()
+	// Database
+	db := initDB()
 	defer db.Close()
 
-	// Logger
-	out := &lumberjack.Logger{
-		Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log",
-		MaxSize:  10,
-		MaxAge:   10,
-		Compress: true,
-	}
-	logger := &logrus.Logger{
-		Out:          out,
-		Formatter:    &logrus.JSONFormatter{PrettyPrint: true},
-		ReportCaller: true,
-		Level:        logrus.InfoLevel,
-	}
+	// Redis
+	redisPool := initRedis()
+	defer redisPool.Close()
 
+	// Logger
+	logger := initLogger()
+
+	// Application Context
 	appContext := &controllers.AppContext{
-		DB:     db,
-		Logger: logger,
+		DB:        db,
+		Logger:    logger,
+		RedisPool: redisPool,
 	}
 
 	srv := &http.Server{
@@ -83,4 +80,43 @@ func main() {
 	// Shutdown gracefully
 	srv.Shutdown(ctx)
 	os.Exit(0)
+}
+
+func initDB() *models.DB {
+	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@%s/%s?parseTime=true", viper.GetString("MYSQL.USER"), viper.GetString("MYSQL.PASSWORD"), viper.GetString("MYSQL.HOST"), viper.GetString("MYSQL.DATABASE")))
+	if err != nil {
+		log.Fatalln("Unable to connect to database", err.Error())
+	}
+
+	return models.Use(db)
+}
+
+func initRedis() *redis.Pool {
+	return &redis.Pool{
+		MaxIdle:   viper.GetInt("REDIS.MAX_IDLE"),
+		MaxActive: viper.GetInt("REDIS.MAX_ACTIVE"),
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%s", viper.GetString("REDIS.HOST"), viper.GetString("REDIS.PORT")))
+			if err != nil {
+				log.Fatalln("Redis connection failed")
+			}
+			return c, err
+		},
+	}
+}
+
+func initLogger() *logrus.Logger {
+	out := &lumberjack.Logger{
+		Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log",
+		MaxSize:  10,
+		MaxAge:   10,
+		Compress: true,
+	}
+
+	return &logrus.Logger{
+		Out:          out,
+		Formatter:    &logrus.JSONFormatter{PrettyPrint: true},
+		ReportCaller: true,
+		Level:        logrus.InfoLevel,
+	}
 }

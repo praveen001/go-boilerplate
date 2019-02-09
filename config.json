@@ -8,5 +8,11 @@
         "PASSWORD": "root",
         "HOST": "",
         "DATABASE": "quest"
+    },
+    "REDIS": {
+        "HOST": "",
+        "PORT": "6379",
+        "MAX_IDLE": 80,
+        "MAX_ACTIVE": 100
     }
 }

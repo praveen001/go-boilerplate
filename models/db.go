@@ -1,11 +1,7 @@
 package models
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/jinzhu/gorm"
-	"github.com/spf13/viper"
 )
 
 // DB is a wrapper over *gorm.DB
@@ -14,15 +10,8 @@ type DB struct {
 	db *gorm.DB
 }
 
-// InitDB connects to the database, and returns *DB
-// panics connection failure
-func InitDB() *DB {
-	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@%s/%s?parseTime=true", viper.GetString("MYSQL.USER"), viper.GetString("MYSQL.PASSWORD"), viper.GetString("MYSQL.HOST"), viper.GetString("MYSQL.DATABASE")))
-	db.DB().SetMaxOpenConns(3)
-	if err != nil {
-		log.Fatalln("Unable to connect to database", err.Error())
-	}
-
+// Use the given connection for db access
+func Use(db *gorm.DB) *DB {
 	return &DB{
 		db: db,
 	}

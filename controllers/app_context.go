@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gomodule/redigo/redis"
 	"github.com/gorilla/handlers"
 	"github.com/praveen001/go-boilerplate/models"
 	"github.com/rs/cors"
@@ -14,8 +15,9 @@ import (
 // AppContext holds the context for each request
 // Everything in context must be thread-safe
 type AppContext struct {
-	DB     *models.DB
-	Logger *logrus.Logger
+	DB        *models.DB
+	RedisPool *redis.Pool
+	Logger    *logrus.Logger
 }
 
 // RecoveryHandler returns 500 status when handler panics.
