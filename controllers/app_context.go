@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/gomodule/redigo/redis"
-	"github.com/gorilla/handlers"
 	"github.com/praveen001/go-boilerplate/models"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
@@ -60,5 +60,12 @@ func (c *AppContext) LogHandler(h http.Handler) http.Handler {
 		MaxAge:   10,
 		Compress: true,
 	}
-	return handlers.LoggingHandler(out, h)
+
+	logger := &logrus.Logger{
+		Out:       out,
+		Level:     logrus.InfoLevel,
+		Formatter: &logrus.TextFormatter{},
+	}
+
+	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger, NoColor: true})(h)
 }
