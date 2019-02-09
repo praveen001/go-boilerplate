@@ -1,22 +1,21 @@
 package controllers
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
-
-	"github.com/praveen001/go-boilerplate/models"
 )
 
 // RegisterUser creates a new user in database
 func (c *AppContext) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	user := &models.User{}
-	if err := json.NewDecoder(r.Body).Decode(user); err != nil {
-		log.Println("Unable to decode request body", err.Error())
-		return
-	}
+	c.Logger.Errorln("ERROR LOG")
+	// shouldBlock := r.URL.Query().Get("block")
+	// fmt.Println(shouldBlock)
+	// user := &models.User{}
+	// if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+	// 	log.Println("Unable to decode request body", err.Error())
+	// 	return
+	// }
 
-	c.DB.AddUser(&models.User{})
+	// c.DB.AddUser(&models.User{}, shouldBlock)
 
 	// if err := c.DB.Save(user).Error; err != nil {
 	// 	log.Println("Unable to register", err.Error())

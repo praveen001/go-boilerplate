@@ -9,7 +9,10 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/praveen001/go-boilerplate/models"
+	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
@@ -36,8 +39,23 @@ func main() {
 	db := models.InitDB()
 	defer db.Close()
 
+	// Logger
+	out := &lumberjack.Logger{
+		Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log",
+		MaxSize:  10,
+		MaxAge:   10,
+		Compress: true,
+	}
+	logger := &logrus.Logger{
+		Out:          out,
+		Formatter:    &logrus.JSONFormatter{PrettyPrint: true},
+		ReportCaller: true,
+		Level:        logrus.InfoLevel,
+	}
+
 	appContext := &controllers.AppContext{
-		DB: db,
+		DB:     db,
+		Logger: logger,
 	}
 
 	srv := &http.Server{

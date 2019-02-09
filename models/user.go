@@ -10,6 +10,6 @@ type User struct {
 	Name string `json:"name"`
 }
 
-func (db DB) AddUser(u *User) {
-	db.db.Get(u.Name)
+func (db DB) AddUser(u *User, s string) {
+	db.db.Model(u).Count(u)
 }

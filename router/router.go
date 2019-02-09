@@ -3,8 +3,8 @@ package router
 import (
 	"net/http"
 
+	"github.com/justinas/alice"
 	"github.com/praveen001/go-boilerplate/controllers"
-	"github.com/rs/cors"
 
 	"github.com/gorilla/mux"
 )
@@ -18,10 +18,7 @@ func InitRouter(ctx *controllers.AppContext) http.Handler {
 
 	r.use("/users", userRouter)
 
-	return cors.New(cors.Options{
-		AllowedHeaders: []string{"authorization", "content-type"},
-		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
-	}).Handler(r)
+	return alice.New(ctx.LogHandler, ctx.CORSHandler, ctx.RecoveryHandler).Then(r)
 }
 
 /*

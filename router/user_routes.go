@@ -1,5 +1,5 @@
 package router
 
 func userRouter(r *CustomRouter) {
-	r.post("/register", r.RegisterUser)
+	r.get("/register", r.RegisterUser)
 }
