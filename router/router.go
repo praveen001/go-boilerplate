@@ -3,7 +3,6 @@ package router
 import (
 	"net/http"
 
-	"github.com/justinas/alice"
 	"github.com/praveen001/go-boilerplate/controllers"
 
 	"github.com/gorilla/mux"
@@ -15,10 +14,11 @@ func InitRouter(ctx *controllers.AppContext) http.Handler {
 		mux.NewRouter(),
 		ctx,
 	}
+	r.Use(ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
 
-	r.use("/users", userRouter)
+	r.subRouter("/users", userRouter)
 
-	return alice.New(ctx.LogHandler, ctx.CORSHandler, ctx.RecoveryHandler).Then(r)
+	return r
 }
 
 /*

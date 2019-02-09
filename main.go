@@ -79,7 +79,6 @@ func main() {
 
 	// Shutdown gracefully
 	srv.Shutdown(ctx)
-	os.Exit(0)
 }
 
 func initDB() *models.DB {

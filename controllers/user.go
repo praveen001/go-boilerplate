@@ -7,6 +7,7 @@ import (
 // RegisterUser creates a new user in database
 func (c *AppContext) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	c.Logger.Errorln("ERROR LOG")
+	panic("PANIC")
 	// shouldBlock := r.URL.Query().Get("block")
 	// fmt.Println(shouldBlock)
 	// user := &models.User{}

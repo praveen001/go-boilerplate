@@ -22,9 +22,8 @@ func (cr *CustomRouter) bindHandler(path string, handler http.HandlerFunc, metho
 	cr.Router.HandleFunc(path, handler).Methods(method)
 }
 
-func (cr *CustomRouter) use(path string, subRouter func(*CustomRouter)) {
-	scr := &CustomRouter{cr.PathPrefix(path).Subrouter(), cr.AppContext}
-	subRouter(scr)
+func (cr *CustomRouter) subRouter(path string, fn func(*CustomRouter)) {
+	fn(&CustomRouter{cr.PathPrefix(path).Subrouter(), cr.AppContext})
 }
 
 func (cr *CustomRouter) get(path string, handler http.HandlerFunc) {
