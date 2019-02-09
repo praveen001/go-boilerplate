@@ -46,13 +46,14 @@ func main() {
 	defer redisPool.Close()
 
 	// Logger
-	logger := initLogger()
+	appLogger, accessLogger := initLogger()
 
 	// Application Context
 	appContext := &controllers.AppContext{
-		DB:        db,
-		Logger:    logger,
-		RedisPool: redisPool,
+		DB:           db,
+		Logger:       appLogger,
+		AccessLogger: accessLogger,
+		RedisPool:    redisPool,
 	}
 
 	srv := &http.Server{
@@ -104,18 +105,29 @@ func initRedis() *redis.Pool {
 	}
 }
 
-func initLogger() *logrus.Logger {
-	out := &lumberjack.Logger{
-		Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log",
-		MaxSize:  10,
-		MaxAge:   10,
-		Compress: true,
-	}
-
-	return &logrus.Logger{
-		Out:          out,
+func initLogger() (*logrus.Logger, *logrus.Logger) {
+	appLogger := &logrus.Logger{
+		Out: &lumberjack.Logger{
+			Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log",
+			MaxSize:  5,
+			MaxAge:   10,
+			Compress: true,
+		},
 		Formatter:    &logrus.JSONFormatter{PrettyPrint: true},
 		ReportCaller: true,
 		Level:        logrus.InfoLevel,
 	}
+
+	accessLogger := &logrus.Logger{
+		Out: &lumberjack.Logger{
+			Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/access.log",
+			MaxSize:  5,
+			MaxAge:   10,
+			Compress: true,
+		},
+		Level:     logrus.InfoLevel,
+		Formatter: &logrus.TextFormatter{},
+	}
+
+	return appLogger, accessLogger
 }

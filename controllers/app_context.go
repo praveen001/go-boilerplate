@@ -9,15 +9,15 @@ import (
 	"github.com/praveen001/go-boilerplate/models"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
-	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
 
 // AppContext holds the context for each request
 // Everything in context must be thread-safe
 type AppContext struct {
-	DB        *models.DB
-	RedisPool *redis.Pool
-	Logger    *logrus.Logger
+	DB           *models.DB
+	RedisPool    *redis.Pool
+	Logger       *logrus.Logger
+	AccessLogger *logrus.Logger
 }
 
 // RecoveryHandler returns 500 status when handler panics.
@@ -54,18 +54,5 @@ func (c *AppContext) CORSHandler(h http.Handler) http.Handler {
 
 // LogHandler writes access log
 func (c *AppContext) LogHandler(h http.Handler) http.Handler {
-	out := &lumberjack.Logger{
-		Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/access.log",
-		MaxSize:  10,
-		MaxAge:   10,
-		Compress: true,
-	}
-
-	logger := &logrus.Logger{
-		Out:       out,
-		Level:     logrus.InfoLevel,
-		Formatter: &logrus.TextFormatter{},
-	}
-
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger, NoColor: true})(h)
+	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: c.AccessLogger, NoColor: true})(h)
 }
