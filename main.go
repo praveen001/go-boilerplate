@@ -57,7 +57,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", viper.GetString("HTTP.HOST"), viper.GetString("HTTP.PORT")),
-		Handler: router.InitRouter(appContext),
+		Handler: router.New(appContext),
 	}
 
 	go func() {

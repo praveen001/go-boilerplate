@@ -3,22 +3,35 @@ package router
 import (
 	"net/http"
 
-	"github.com/praveen001/go-boilerplate/controllers"
+	"github.com/go-chi/chi"
 
-	"github.com/gorilla/mux"
+	"github.com/praveen001/go-boilerplate/controllers"
 )
 
-// InitRouter initializes the application's router
-func InitRouter(ctx *controllers.AppContext) http.Handler {
-	r := &CustomRouter{
-		mux.NewRouter(),
+// CustomRouter wrapped mux router
+type CustomRouter struct {
+	*chi.Mux
+	*controllers.AppContext
+}
+
+func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	cr.Mux.ServeHTTP(w, r)
+}
+
+// New initializes the application's router
+func New(ctx *controllers.AppContext) http.Handler {
+	cr := &CustomRouter{
+		chi.NewMux(),
 		ctx,
 	}
-	r.Use(ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
 
-	r.subRouter("/users", userRouter)
+	cr.Use(ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
 
-	return r
+	cr.Route("/v1", func(r chi.Router) {
+		r.Mount("/api/user", cr.userRouter())
+	})
+
+	return cr
 }
 
 /*

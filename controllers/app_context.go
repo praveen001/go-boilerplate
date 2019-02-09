@@ -26,8 +26,8 @@ func (c *AppContext) RecoveryHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		defer func() {
-			if r := recover(); r != nil {
-				switch t := r.(type) {
+			if e := recover(); e != nil {
+				switch t := e.(type) {
 				case string:
 					err = errors.New(t)
 				case error:
@@ -35,7 +35,7 @@ func (c *AppContext) RecoveryHandler(h http.Handler) http.Handler {
 				default:
 					err = errors.New("Unknown error")
 				}
-				c.Logger.Errorln(err)
+				c.Logger.Errorln(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}()

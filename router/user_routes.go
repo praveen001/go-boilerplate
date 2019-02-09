@@ -1,5 +1,13 @@
 package router
 
-func userRouter(r *CustomRouter) {
-	r.get("/register", r.RegisterUser)
+import (
+	"github.com/go-chi/chi"
+)
+
+func (cr *CustomRouter) userRouter() *chi.Mux {
+	router := chi.NewRouter()
+
+	router.Get("/register", cr.RegisterUser)
+
+	return router
 }
