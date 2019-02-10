@@ -7,7 +7,7 @@ import (
 // RegisterUser creates a new user in database
 func (c *AppContext) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	c.Logger.Errorln("ERROR LOG")
-	panic("PANIC")
+	// panic("PANIC")
 	// shouldBlock := r.URL.Query().Get("block")
 	// fmt.Println(shouldBlock)
 	// user := &models.User{}
@@ -23,5 +23,6 @@ func (c *AppContext) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	w.Write([]byte("Test"))
+	v := r.URL.Query()
+	w.Write([]byte(v.Get("q")))
 }
