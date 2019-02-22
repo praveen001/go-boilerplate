@@ -28,6 +28,7 @@ func New(ctx *app.Context) http.Handler {
 
 	cr.Route("/v1/api", func(r chi.Router) {
 		r.Mount("/users", cr.userRouter())
+		r.Mount("/feeds", cr.feedRouter())
 	})
 
 	return cr
