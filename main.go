@@ -28,7 +28,13 @@ func init() {
 
 func main() {
 	var conf app.Config
-	viper.Unmarshal(&conf)
+
+	if len(flag.Args()) == 0 {
+		panic("Specify environment")
+	}
+	environ := flag.Args()[0]
+	viper.UnmarshalKey(environ, &conf)
+	conf.Environment = app.Environment(environ)
 
 	app := app.New(&conf)
 	r := router.New(app)

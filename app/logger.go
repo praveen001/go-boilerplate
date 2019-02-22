@@ -11,7 +11,7 @@ type Logger struct {
 
 func (c *Context) initLogger() {
 	config := zap.NewDevelopmentConfig()
-	if c.Config.Environment == Production {
+	if c.Config.Logger.Path != "" {
 		config.OutputPaths = []string{c.Config.Logger.Path}
 	}
 	logger, _ := config.Build()

@@ -1,22 +1,44 @@
 {
-    "http": {
-        "host": "",
-        "port": "5000"
+    "dev": {
+        "http": {
+            "host": "",
+            "port": "5000"
+        },
+        "mysql": {
+            "user": "root",
+            "password": "welcome",
+            "host": "",
+            "database": "test"
+        },
+        "redis": {
+            "host": "",
+            "port": "6379",
+            "maxIdle": 80,
+            "maxActive": 100
+        },
+        "logger": {
+            "path": ""
+        }
     },
-    "mysql": {
-        "user": "root",
-        "password": "welcome",
-        "host": "",
-        "database": "test"
-    },
-    "redis": {
-        "host": "",
-        "port": "6379",
-        "maxIdle": 80,
-        "maxActive": 100
-    },
-    "logger": {
-        "path": "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log"
-    },
-    "environment": "dev"
+    "prod": {
+        "http": {
+            "host": "",
+            "port": "5000"
+        },
+        "mysql": {
+            "user": "root",
+            "password": "welcome",
+            "host": "",
+            "database": "test"
+        },
+        "redis": {
+            "host": "",
+            "port": "6379",
+            "maxIdle": 80,
+            "maxActive": 100
+        },
+        "logger": {
+            "path": "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log"
+        }
+    }
 }
