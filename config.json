@@ -1,18 +1,22 @@
 {
-    "HTTP": {
-        "HOST": "",
-        "PORT": "5000"
+    "http": {
+        "host": "",
+        "port": "5000"
     },
-    "MYSQL": {
-        "USER": "root",
-        "PASSWORD": "root",
-        "HOST": "",
-        "DATABASE": "quest"
+    "mysql": {
+        "user": "root",
+        "password": "welcome",
+        "host": "",
+        "database": "test"
     },
-    "REDIS": {
-        "HOST": "",
-        "PORT": "6379",
-        "MAX_IDLE": 80,
-        "MAX_ACTIVE": 100
-    }
+    "redis": {
+        "host": "",
+        "port": "6379",
+        "maxIdle": 80,
+        "maxActive": 100
+    },
+    "logger": {
+        "path": "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log"
+    },
+    "environment": "dev"
 }

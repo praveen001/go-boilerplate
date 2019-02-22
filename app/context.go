@@ -1,12 +1,11 @@
 package app
 
 import (
-	"errors"
+	"context"
+	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi/middleware"
 	"github.com/gomodule/redigo/redis"
-	"github.com/rs/cors"
 )
 
 // Context ..
@@ -14,41 +13,44 @@ type Context struct {
 	DB        *DB
 	RedisPool *redis.Pool
 	Logger    *Logger
+	Config    *Config
+
+	srv *http.Server
 }
 
-// RecoveryHandler returns 500 status when handler panics.
-// Writes error to application log
-func (c *Context) RecoveryHandler(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		defer func() {
-			if e := recover(); e != nil {
-				switch t := e.(type) {
-				case string:
-					err = errors.New(t)
-				case error:
-					err = t
-				default:
-					err = errors.New("Unknown error")
-				}
-				c.Logger.Error(err.Error())
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-		}()
+// New application with given configs
+func New(conf *Config) *Context {
+	c := &Context{
+		Config: conf,
+	}
 
-		h.ServeHTTP(w, r)
-	})
+	c.initLogger()
+	c.initDB()
+	c.initRedis()
+
+	c.srv = &http.Server{
+		Addr: fmt.Sprintf("%s:%s", conf.HTTP.Host, conf.HTTP.Port),
+	}
+
+	return c
 }
 
-// CORSHandler handles cors requests
-func (c *Context) CORSHandler(h http.Handler) http.Handler {
-	return cors.New(cors.Options{
-		AllowedHeaders: []string{"authorization", "content-type"},
-		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
-	}).Handler(h)
+// StartWith ..
+func (c *Context) StartWith(router http.Handler) {
+	c.srv.Handler = router
+
+	go func() {
+		if err := c.srv.ListenAndServe(); err != nil {
+			c.Logger.Fatal("Unable to start server", err.Error())
+		}
+	}()
+	c.Logger.Info("Start server at ", c.srv.Addr)
 }
 
-// LogHandler writes access log
-func (c *Context) LogHandler(h http.Handler) http.Handler {
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: c.Logger, NoColor: true})(h)
+// Shutdown ..
+func (c *Context) Shutdown(ctx context.Context) {
+	c.DB.close()
+	c.RedisPool.Close()
+
+	c.srv.Shutdown(ctx)
 }
