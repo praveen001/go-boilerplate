@@ -6,9 +6,9 @@
         },
         "mysql": {
             "user": "root",
-            "password": "welcome",
+            "password": "root",
             "host": "",
-            "database": "test"
+            "database": "quest"
         },
         "redis": {
             "host": "",

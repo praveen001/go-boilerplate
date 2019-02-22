@@ -9,17 +9,25 @@ GET http://localhost:5000/v1/api/users HTTP/1.1
 # Create User
 POST http://localhost:5000/v1/api/users HTTP/1.1
 
+{
+    "name": "praveen"
+}
+
 # Delete all users
 DELETE http://localhost:5000/v1/api/users HTTP/1.1
 
 # Get User By ID
-GET http://localhost:5000/v1/api/users/{userID} HTTP/1.1
+GET http://localhost:5000/v1/api/users/4 HTTP/1.1
 
 # Update User
-PUT http://localhost:5000/v1/api/users/{userID} HTTP/1.1
+PUT http://localhost:5000/v1/api/users/4 HTTP/1.1
+
+{
+    "name": "praveen2"
+}
 
 # Delete user by ID
-DELETE http://localhost:5000/v1/api/users/{userID} HTTP/1.1
+DELETE http://localhost:5000/v1/api/users/2 HTTP/1.1
 
 # Get user's feeds
 GET http://localhost:5000/v1/api/users/2/feeds HTTP/1.1
