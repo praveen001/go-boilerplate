@@ -10,6 +10,17 @@ type User struct {
 	Name string `json:"name"`
 }
 
-func (db DB) AddUser(u *User, s string) {
-	db.db.Model(u).Count(u)
+// UserService .
+type UserService struct {
+	db *gorm.DB
+}
+
+// NewUserService .
+func NewUserService(c *gorm.DB) *UserService {
+	return &UserService{c}
+}
+
+// FindAll .
+func (u *UserService) FindAll() ([]*User, error) {
+	return nil, nil
 }

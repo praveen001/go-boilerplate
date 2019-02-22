@@ -2,13 +2,30 @@ package router
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/praveen001/go-boilerplate/handlers"
 )
 
 func (cr *CustomRouter) userRouter() *chi.Mux {
-	router := chi.NewRouter()
+	user := handlers.NewUserHandler(cr.context)
 
-	router.Get("/register", cr.RegisterUser)
-	router.Post("/register", cr.RegisterUser)
+	r := chi.NewRouter()
+	r.Post("/", user.Create)
+	r.Get("/", user.List)
+	r.Delete("/", user.DeleteAll)
 
-	return router
+	r.Group(func(r chi.Router) {
+		r.Route("/{userID}", func(r chi.Router) {
+			r.Use(user.Preload)
+			r.Get("/", user.Get)
+			r.Put("/", user.Update)
+			r.Delete("/", user.Delete)
+
+			r.Route("/feeds", func(r chi.Router) {
+				r.Post("/", user.CreateFeed)
+				r.Get("/", user.GetFeeds)
+			})
+		})
+	})
+
+	return r
 }

@@ -4,14 +4,13 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-
-	"github.com/praveen001/go-boilerplate/controllers"
+	"github.com/praveen001/go-boilerplate/app"
 )
 
 // CustomRouter wrapped mux router
 type CustomRouter struct {
 	*chi.Mux
-	*controllers.AppContext
+	context *app.Context
 }
 
 func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +18,7 @@ func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // New initializes the application's router
-func New(ctx *controllers.AppContext) http.Handler {
+func New(ctx *app.Context) http.Handler {
 	cr := &CustomRouter{
 		chi.NewMux(),
 		ctx,
@@ -27,8 +26,8 @@ func New(ctx *controllers.AppContext) http.Handler {
 
 	cr.Use(ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
 
-	cr.Route("/v1", func(r chi.Router) {
-		r.Mount("/api/user", cr.userRouter())
+	cr.Route("/v1/api", func(r chi.Router) {
+		r.Mount("/users", cr.userRouter())
 	})
 
 	return cr

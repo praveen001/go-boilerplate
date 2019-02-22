@@ -1,4 +1,4 @@
-package controllers
+package app
 
 import (
 	"errors"
@@ -6,23 +6,19 @@ import (
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/gomodule/redigo/redis"
-	"github.com/praveen001/go-boilerplate/models"
 	"github.com/rs/cors"
-	"github.com/sirupsen/logrus"
 )
 
-// AppContext holds the context for each request
-// Everything in context must be thread-safe
-type AppContext struct {
-	DB           *models.DB
-	RedisPool    *redis.Pool
-	Logger       *logrus.Logger
-	AccessLogger *logrus.Logger
+// Context ..
+type Context struct {
+	DB        *DB
+	RedisPool *redis.Pool
+	Logger    *Logger
 }
 
 // RecoveryHandler returns 500 status when handler panics.
 // Writes error to application log
-func (c *AppContext) RecoveryHandler(h http.Handler) http.Handler {
+func (c *Context) RecoveryHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		defer func() {
@@ -35,7 +31,7 @@ func (c *AppContext) RecoveryHandler(h http.Handler) http.Handler {
 				default:
 					err = errors.New("Unknown error")
 				}
-				c.Logger.Errorln(err.Error())
+				c.Logger.Error(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}()
@@ -45,7 +41,7 @@ func (c *AppContext) RecoveryHandler(h http.Handler) http.Handler {
 }
 
 // CORSHandler handles cors requests
-func (c *AppContext) CORSHandler(h http.Handler) http.Handler {
+func (c *Context) CORSHandler(h http.Handler) http.Handler {
 	return cors.New(cors.Options{
 		AllowedHeaders: []string{"authorization", "content-type"},
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
@@ -53,6 +49,6 @@ func (c *AppContext) CORSHandler(h http.Handler) http.Handler {
 }
 
 // LogHandler writes access log
-func (c *AppContext) LogHandler(h http.Handler) http.Handler {
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: c.AccessLogger, NoColor: true})(h)
+func (c *Context) LogHandler(h http.Handler) http.Handler {
+	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: c.Logger, NoColor: true})(h)
 }

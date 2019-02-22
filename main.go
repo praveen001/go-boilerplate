@@ -9,16 +9,14 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/gomodule/redigo/redis"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
-	"github.com/praveen001/go-boilerplate/models"
-	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+	"github.com/gomodule/redigo/redis"
+
+	"github.com/praveen001/go-boilerplate/app"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-
-	"github.com/praveen001/go-boilerplate/controllers"
 
 	"github.com/praveen001/go-boilerplate/router"
 
@@ -46,14 +44,13 @@ func main() {
 	defer redisPool.Close()
 
 	// Logger
-	appLogger, accessLogger := initLogger()
+	appLogger := initLogger()
 
 	// Application Context
-	appContext := &controllers.AppContext{
-		DB:           db,
-		Logger:       appLogger,
-		AccessLogger: accessLogger,
-		RedisPool:    redisPool,
+	appContext := &app.Context{
+		DB:        db,
+		Logger:    appLogger,
+		RedisPool: redisPool,
 	}
 
 	srv := &http.Server{
@@ -82,13 +79,13 @@ func main() {
 	srv.Shutdown(ctx)
 }
 
-func initDB() *models.DB {
+func initDB() *app.DB {
 	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@%s/%s?parseTime=true", viper.GetString("MYSQL.USER"), viper.GetString("MYSQL.PASSWORD"), viper.GetString("MYSQL.HOST"), viper.GetString("MYSQL.DATABASE")))
 	if err != nil {
 		log.Fatalln("Unable to connect to database", err.Error())
 	}
 
-	return models.Use(db)
+	return app.Use(db)
 }
 
 func initRedis() *redis.Pool {
@@ -105,29 +102,12 @@ func initRedis() *redis.Pool {
 	}
 }
 
-func initLogger() (*logrus.Logger, *logrus.Logger) {
-	appLogger := &logrus.Logger{
-		Out: &lumberjack.Logger{
-			Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log",
-			MaxSize:  5,
-			MaxAge:   10,
-			Compress: true,
-		},
-		Formatter:    &logrus.JSONFormatter{PrettyPrint: true},
-		ReportCaller: true,
-		Level:        logrus.InfoLevel,
+func initLogger() *app.Logger {
+	config := zap.NewDevelopmentConfig()
+	config.OutputPaths = []string{
+		"/home/praveen/go/src/github.com/praveen001/go-boilerplate/application.log",
 	}
+	logger, _ := config.Build()
 
-	accessLogger := &logrus.Logger{
-		Out: &lumberjack.Logger{
-			Filename: "/home/praveen/go/src/github.com/praveen001/go-boilerplate/access.log",
-			MaxSize:  5,
-			MaxAge:   10,
-			Compress: true,
-		},
-		Level:     logrus.InfoLevel,
-		Formatter: &logrus.TextFormatter{},
-	}
-
-	return appLogger, accessLogger
+	return &app.Logger{logger.Sugar()}
 }

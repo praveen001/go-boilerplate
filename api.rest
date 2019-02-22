@@ -1,0 +1,53 @@
+
+#########
+# Users #
+#########
+
+# List all users
+GET http://localhost:5000/v1/api/users HTTP/1.1
+
+# Create User
+POST http://localhost:5000/v1/api/users HTTP/1.1
+
+# Delete all users
+DELETE http://localhost:5000/v1/api/users HTTP/1.1
+
+# Get User By ID
+GET http://localhost:5000/v1/api/users/{userID} HTTP/1.1
+
+# Update User
+PUT http://localhost:5000/v1/api/users/{userID} HTTP/1.1
+
+# Delete user by ID
+DELETE http://localhost:5000/v1/api/users/{userID} HTTP/1.1
+
+# Get user's feeds
+GET http://localhost:5000/v1/api/users/2/feeds HTTP/1.1
+
+# Create a feed for new
+POST http://localhost:5000/v1/api/users/{userID}/feeds HTTP/1.1
+
+# Delete all feeds of user
+DELETE http://localhost:5000/v1/api/users/{userID}/feeds HTTP/1.1
+
+#########
+# Feeds #
+#########
+
+# List all feeds (not needed)
+GET http://localhost:5000/v1/api/feeds HTTP/1.1
+
+# Create feed (not needed)
+POST http://localhost:5000/v1/api/feeds HTTP/1.1
+
+# Delete all feeds (not needed)
+DELETE http://localhost:5000/v1/api/feeds HTTP/1.1
+
+# Get feed By ID
+GET http://localhost:5000/v1/api/feeds/{feedID} HTTP/1.1
+
+# Update feed
+PUT http://localhost:5000/v1/api/feeds/{feedID} HTTP/1.1
+
+# Delete feed by ID
+DELETE http://localhost:5000/v1/api/feeds/{feedID} HTTP/1.1
