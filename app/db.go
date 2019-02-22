@@ -13,6 +13,7 @@ type DB struct {
 	User *models.UserService
 }
 
+// initDB initializes DB connections, and prepares all the Models by providing them with the db connection
 func (c *Context) initDB() {
 	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@%s/%s?parseTime=true", c.Config.MySQL.User, c.Config.MySQL.Password, c.Config.MySQL.Host, c.Config.MySQL.Database))
 	if err != nil {

@@ -7,7 +7,9 @@ import (
 	"github.com/praveen001/go-boilerplate/app"
 )
 
-// CustomRouter wrapped mux router
+// CustomRouter wrapps chi MUX router, and application context
+//
+// Allows passing application context to handlers
 type CustomRouter struct {
 	*chi.Mux
 	context *app.Context

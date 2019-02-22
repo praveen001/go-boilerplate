@@ -14,7 +14,11 @@ type FeedHandler struct {
 	logger *app.Logger
 }
 
-// NewFeedHandler .
+// NewFeedHandler creates a new `FeedHandler`
+//
+// It picks what it needs from application context and keeps it locally
+//
+// Easy to know what this handler group is using
 func NewFeedHandler(c *app.Context) *FeedHandler {
 	return &FeedHandler{
 		logger: c.Logger,

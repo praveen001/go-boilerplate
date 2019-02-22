@@ -15,7 +15,11 @@ type UserHandler struct {
 	logger *app.Logger
 }
 
-// NewUserHandler .
+// NewUserHandler creates a new `UserHandler`
+//
+// It picks what it needs from application context and keeps it locally
+//
+// Easy to know what this handler group is using
 func NewUserHandler(c *app.Context) *UserHandler {
 	return &UserHandler{
 		user:   c.DB.User,

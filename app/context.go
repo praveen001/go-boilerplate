@@ -18,7 +18,9 @@ type Context struct {
 	srv *http.Server
 }
 
-// New application with given configs
+// New creates a new application with given configs
+//
+// It also initiates all application dependencies like DB connections
 func New(conf *Config) *Context {
 	c := &Context{
 		Config: conf,
@@ -35,7 +37,9 @@ func New(conf *Config) *Context {
 	return c
 }
 
-// StartWith ..
+// StartWith uses the given `http.Handler` for mapping HTTP requests
+//
+// Starts server in a goroutine
 func (c *Context) StartWith(router http.Handler) {
 	c.srv.Handler = router
 
@@ -47,7 +51,7 @@ func (c *Context) StartWith(router http.Handler) {
 	c.Logger.Info("Start server at ", c.srv.Addr)
 }
 
-// Shutdown ..
+// Shutdown closes all the open connections, and finally shutsdown the HTTP server.
 func (c *Context) Shutdown(ctx context.Context) {
 	c.DB.close()
 	c.RedisPool.Close()
