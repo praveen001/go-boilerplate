@@ -19,11 +19,6 @@ func (cr *CustomRouter) userRouter() *chi.Mux {
 			r.Get("/", user.Get)
 			r.Put("/", user.Update)
 			r.Delete("/", user.Delete)
-
-			r.Route("/feeds", func(r chi.Router) {
-				r.Post("/", user.CreateFeed)
-				r.Get("/", user.GetFeeds)
-			})
 		})
 	})
 

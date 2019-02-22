@@ -21,17 +21,40 @@ func NewFeedHandler(c *app.Context) *FeedHandler {
 	}
 }
 
+// Create .
+func (h *FeedHandler) Create(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "New user feed", chi.URLParam(r, "feedID"))
+}
+
+// List .
+func (h *FeedHandler) List(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Get User Feeds", chi.URLParam(r, "feedID"))
+}
+
+// DeleteAll .
+func (h *FeedHandler) DeleteAll(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Delete all feeds")
+}
+
 // Get feed by id
-func (fh *FeedHandler) Get(w http.ResponseWriter, r *http.Request) {
+func (h *FeedHandler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Get feed by id", chi.URLParam(r, "feedID"))
 }
 
 // Update .
-func (fh *FeedHandler) Update(w http.ResponseWriter, r *http.Request) {
+func (h *FeedHandler) Update(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Update feed by id", chi.URLParam(r, "feedID"))
 }
 
 // Delete .
-func (fh *FeedHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *FeedHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(w)
+}
+
+// Preload .
+func (h *FeedHandler) Preload(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Loading feeds from middleware")
+		next.ServeHTTP(w, r)
+	})
 }

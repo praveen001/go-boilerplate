@@ -8,13 +8,17 @@ import (
 func (cr *CustomRouter) feedRouter() *chi.Mux {
 	feed := handlers.NewFeedHandler(cr.context)
 
-	router := chi.NewRouter()
+	r := chi.NewRouter()
+	r.Post("/", feed.Create)
+	r.Get("/", feed.List)
+	r.Get("/", feed.DeleteAll)
 
-	router.Route("/{feedID}", func(r chi.Router) {
-		router.Get("/", feed.Get)
-		router.Put("/", feed.Update)
-		router.Delete("/", feed.Delete)
+	r.Route("/{feedID}", func(r chi.Router) {
+		r.Use(feed.Preload)
+		r.Get("/", feed.Get)
+		r.Put("/", feed.Update)
+		r.Delete("/", feed.Delete)
 	})
 
-	return router
+	return r
 }

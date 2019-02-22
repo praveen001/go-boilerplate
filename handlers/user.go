@@ -62,13 +62,3 @@ func (h *UserHandler) Preload(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-
-// CreateFeed .
-func (h *UserHandler) CreateFeed(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "New user feed", chi.URLParam(r, "userID"))
-}
-
-// GetFeeds .
-func (h *UserHandler) GetFeeds(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Get User Feeds", chi.URLParam(r, "userID"))
-}
