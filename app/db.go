@@ -5,13 +5,14 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/praveen001/go-boilerplate/models"
+	"github.com/praveen001/go-boilerplate/repository"
 )
 
 // DB .
 type DB struct {
 	conn *gorm.DB
-	User *models.UserService
-	Feed *models.FeedService
+	User *repository.UserRepository
+	Feed *repository.FeedRepository
 }
 
 // initDB initializes DB connections, and prepares all the Models by providing them with the db connection
@@ -21,7 +22,7 @@ func (c *Context) initDB() {
 		c.Logger.Fatal("Unable to connect to database", err.Error())
 	}
 
-	c.DB = initServices(db)
+	c.DB = initRepositories(db)
 }
 
 // migrate runs the migrations
@@ -35,10 +36,10 @@ func (db *DB) close() {
 }
 
 // Use the given connection for db access
-func initServices(db *gorm.DB) *DB {
+func initRepositories(db *gorm.DB) *DB {
 	return &DB{
 		conn: db,
-		User: models.NewUserService(db),
-		Feed: models.NewFeedService(db),
+		User: repository.NewUserRepository(db),
+		Feed: repository.NewFeedRepository(db),
 	}
 }

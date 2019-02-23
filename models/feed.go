@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 // Feed ..
@@ -15,25 +13,4 @@ type Feed struct {
 	Name      string     `json:"name"`
 	UserID    uint       `json:"userId"`
 	User      User       `json:"user"`
-}
-
-// FeedService .
-type FeedService struct {
-	db *gorm.DB
-}
-
-// NewFeedService .
-func NewFeedService(c *gorm.DB) *FeedService {
-	return &FeedService{c}
-}
-
-// New creates a new Feed
-func (s *FeedService) New(feed *Feed) error {
-	return s.db.Create(feed).Error
-}
-
-// All .
-func (s *FeedService) All() ([]*Feed, error) {
-	var f []*Feed
-	return f, s.db.Preload("User").Find(&f).Error
 }

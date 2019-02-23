@@ -10,11 +10,12 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/praveen001/go-boilerplate/app"
 	"github.com/praveen001/go-boilerplate/models"
+	"github.com/praveen001/go-boilerplate/repository"
 )
 
 // UserHandler .
 type UserHandler struct {
-	user   *models.UserService
+	user   *repository.UserRepository
 	logger *app.Logger
 }
 

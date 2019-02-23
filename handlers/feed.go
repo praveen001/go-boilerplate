@@ -7,14 +7,15 @@ import (
 
 	"github.com/praveen001/go-boilerplate/app"
 	"github.com/praveen001/go-boilerplate/models"
+	"github.com/praveen001/go-boilerplate/repository"
 
 	"github.com/go-chi/chi"
 )
 
 // FeedHandler .
 type FeedHandler struct {
-	feed   *models.FeedService
-	user   *models.UserService
+	feed   *repository.FeedRepository
+	user   *repository.UserRepository
 	logger *app.Logger
 }
 
