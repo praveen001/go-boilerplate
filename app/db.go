@@ -11,6 +11,7 @@ import (
 type DB struct {
 	conn *gorm.DB
 	User *models.UserService
+	Feed *models.FeedService
 }
 
 // initDB initializes DB connections, and prepares all the Models by providing them with the db connection
@@ -25,7 +26,7 @@ func (c *Context) initDB() {
 
 // migrate runs the migrations
 func (db *DB) migrate() {
-	db.conn.AutoMigrate()
+	db.conn.AutoMigrate(models.User{}, models.Feed{})
 }
 
 // close the database connection
@@ -38,5 +39,6 @@ func initServices(db *gorm.DB) *DB {
 	return &DB{
 		conn: db,
 		User: models.NewUserService(db),
+		Feed: models.NewFeedService(db),
 	}
 }

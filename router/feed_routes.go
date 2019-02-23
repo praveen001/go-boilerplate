@@ -11,7 +11,7 @@ func (cr *CustomRouter) feedRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Post("/", feed.Create)
 	r.Get("/", feed.List)
-	r.Get("/", feed.DeleteAll)
+	r.Delete("/", feed.DeleteAll)
 
 	r.Route("/{feedID}", func(r chi.Router) {
 		r.Use(feed.Preload)

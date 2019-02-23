@@ -30,6 +30,8 @@ func New(conf *Config) *Context {
 	c.initDB()
 	c.initRedis()
 
+	c.DB.migrate()
+
 	c.srv = &http.Server{
 		Addr: fmt.Sprintf("%s:%s", conf.HTTP.Host, conf.HTTP.Port),
 	}

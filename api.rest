@@ -48,6 +48,10 @@ GET http://localhost:5000/v1/api/feeds HTTP/1.1
 # Create feed (not needed)
 POST http://localhost:5000/v1/api/feeds HTTP/1.1
 
+{
+    "name": "testfeed"
+}
+
 # Delete all feeds (not needed)
 DELETE http://localhost:5000/v1/api/feeds HTTP/1.1
 

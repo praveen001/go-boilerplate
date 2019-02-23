@@ -1,16 +1,20 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/praveen001/go-boilerplate/app"
+	"github.com/praveen001/go-boilerplate/models"
 
 	"github.com/go-chi/chi"
 )
 
 // FeedHandler .
 type FeedHandler struct {
+	feed   *models.FeedService
+	user   *models.UserService
 	logger *app.Logger
 }
 
@@ -21,18 +25,40 @@ type FeedHandler struct {
 // Easy to know what this handler group is using
 func NewFeedHandler(c *app.Context) *FeedHandler {
 	return &FeedHandler{
+		feed:   c.DB.Feed,
+		user:   c.DB.User,
 		logger: c.Logger,
 	}
 }
 
 // Create .
 func (h *FeedHandler) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "New user feed", chi.URLParam(r, "feedID"))
+	userID := 1
+
+	var f *models.Feed
+	if err := json.NewDecoder(r.Body).Decode(&f); err != nil {
+		h.logger.Error("Unable to decode request body", err)
+		return
+	}
+	f.UserID = uint(userID)
+
+	if err := h.feed.New(f); err != nil {
+		h.logger.Error("Unable to create new feed", err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(f)
 }
 
 // List .
 func (h *FeedHandler) List(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Get User Feeds", chi.URLParam(r, "feedID"))
+	f, err := h.feed.All()
+	if err != nil {
+		h.logger.Error("Unable to fetch feeds", err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(f)
 }
 
 // DeleteAll .
