@@ -32,10 +32,6 @@ func New(conf *Config) *Context {
 
 	c.DB.migrate()
 
-	c.srv = &http.Server{
-		Addr: fmt.Sprintf("%s:%s", conf.HTTP.Host, conf.HTTP.Port),
-	}
-
 	return c
 }
 
@@ -43,7 +39,10 @@ func New(conf *Config) *Context {
 //
 // Starts server in a goroutine
 func (c *Context) StartWith(router http.Handler) {
-	c.srv.Handler = router
+	c.srv = &http.Server{
+		Addr:    fmt.Sprintf("%s:%s", c.Config.HTTP.Host, c.Config.HTTP.Port),
+		Handler: router,
+	}
 
 	go func() {
 		if err := c.srv.ListenAndServe(); err != nil {
