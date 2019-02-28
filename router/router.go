@@ -28,8 +28,7 @@ func New(ctx *app.Context) http.Handler {
 
 	cr.Use(ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
 
-	cr.Route("/v1/api", func(r chi.Router) {
-		r.Mount("/users", cr.userRouter())
+	cr.Route("/v2/api", func(r chi.Router) {
 		r.Mount("/feeds", cr.feedRouter())
 	})
 

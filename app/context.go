@@ -30,7 +30,7 @@ func New(conf *Config) *Context {
 	c.initDB()
 	c.initRedis()
 
-	c.DB.migrate()
+	// c.DB.migrate()
 
 	return c
 }

@@ -8,7 +8,7 @@
             "user": "root",
             "password": "root",
             "host": "",
-            "database": "quest"
+            "database": "blip"
         },
         "redis": {
             "host": "",

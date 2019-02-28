@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/praveen001/go-boilerplate/app"
-	"github.com/praveen001/go-boilerplate/models"
 	"github.com/praveen001/go-boilerplate/repository"
 
 	"github.com/go-chi/chi"
@@ -32,60 +32,43 @@ func NewFeedHandler(c *app.Context) *FeedHandler {
 	}
 }
 
-// Create .
-func (h *FeedHandler) Create(w http.ResponseWriter, r *http.Request) {
-	userID := 1
-
-	var f *models.Feed
-	if err := json.NewDecoder(r.Body).Decode(&f); err != nil {
-		h.logger.Error("Unable to decode request body", err)
-		return
-	}
-	f.UserID = uint(userID)
-
-	if err := h.feed.New(f); err != nil {
-		h.logger.Error("Unable to create new feed", err)
-		return
-	}
-
-	json.NewEncoder(w).Encode(f)
-}
-
 // List .
 func (h *FeedHandler) List(w http.ResponseWriter, r *http.Request) {
-	f, err := h.feed.All()
+	userID := r.Context().Value("userID").(uint)
+
+	user, err := h.user.Find(userID)
 	if err != nil {
 		h.logger.Error("Unable to fetch feeds", err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(f)
+	json.NewEncoder(w).Encode(user.Feeds)
 }
 
-// DeleteAll .
-func (h *FeedHandler) DeleteAll(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Delete all feeds")
-}
-
-// Get feed by id
+// Get feed by ID
 func (h *FeedHandler) Get(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Get feed by id", chi.URLParam(r, "feedID"))
-}
 
-// Update .
-func (h *FeedHandler) Update(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Update feed by id", chi.URLParam(r, "feedID"))
-}
-
-// Delete .
-func (h *FeedHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w)
 }
 
 // Preload .
 func (h *FeedHandler) Preload(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Loading feeds from middleware")
-		next.ServeHTTP(w, r)
+		rawFeedID := chi.URLParam(r, "feedID")
+		userID := r.Context().Value("userID").(uint)
+
+		feedID, err := strconv.Atoi(rawFeedID)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		feed, err := h.feed.Find(uint(feedID))
+		if err != nil || !feed.BelongsTo(userID) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "feed", feed)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
