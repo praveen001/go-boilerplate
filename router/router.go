@@ -26,10 +26,11 @@ func New(ctx *app.Context) http.Handler {
 		ctx,
 	}
 
-	cr.Use(ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
+	cr.Use(ctx.DummyAuth, ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
 
 	cr.Route("/v2/api", func(r chi.Router) {
 		r.Mount("/feeds", cr.feedRouter())
+		// r.Mount("/playlists", cr.playlistRouter())
 	})
 
 	return cr

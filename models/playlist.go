@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // PlaylistStatus .
 type PlaylistStatus string
@@ -19,15 +21,24 @@ const (
 )
 
 // Playlist .
-// Playlist belongs to Feed
 type Playlist struct {
 	ID        uint      `json:"id" gorm:"primary_key"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 
-	FeedID    uint           `json:"feedId"`
-	Feed      Feed           `json:"feed"`
-	StartTime time.Time      `json:"startTime"`
-	Status    PlaylistStatus `json:"status"`
-	Type      PlaylistType   `json:"type"`
+	// Belongs to Feed
+	Feed   *Feed `json:"feed"`
+	FeedID uint  `json:"feedId"`
+
+	// Has ItemGroup
+	ItemGroup []*ItemGroup `json:"itemGroup"`
+
+	PlayOn time.Time      `json:"playOn"`
+	Status PlaylistStatus `json:"status"`
+	Type   PlaylistType   `json:"type"`
+}
+
+// TableName .
+func (p Playlist) TableName() string {
+	return "new_playlists"
 }

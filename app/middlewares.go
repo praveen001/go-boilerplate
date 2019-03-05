@@ -1,7 +1,9 @@
 package app
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/middleware"
@@ -43,4 +45,13 @@ func (c *Context) CORSHandler(h http.Handler) http.Handler {
 // LogHandler writes access log
 func (c *Context) LogHandler(h http.Handler) http.Handler {
 	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: c.Logger, NoColor: true})(h)
+}
+
+// DummyAuth .
+func (c *Context) DummyAuth(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Added userID")
+		ctx := context.WithValue(r.Context(), "userID", 2)
+		h.ServeHTTP(w, r.WithContext(ctx))
+	})
 }

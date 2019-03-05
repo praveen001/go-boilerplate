@@ -10,9 +10,10 @@ import (
 
 // DB .
 type DB struct {
-	conn *gorm.DB
-	User *repository.UserRepository
-	Feed *repository.FeedRepository
+	conn     *gorm.DB
+	User     *repository.UserRepository
+	Feed     *repository.FeedRepository
+	Playlist *repository.PlaylistRepository
 }
 
 // initDB initializes DB connections, and prepares all the Models by providing them with the db connection
@@ -27,7 +28,7 @@ func (c *Context) initDB() {
 
 // migrate runs the migrations
 func (db *DB) migrate() {
-	db.conn.AutoMigrate(models.User{}, models.Feed{})
+	db.conn.AutoMigrate(models.Playlist{}, models.ItemGroup{}, models.Item{})
 }
 
 // close the database connection
@@ -38,8 +39,9 @@ func (db *DB) close() {
 // Use the given connection for db access
 func initRepositories(db *gorm.DB) *DB {
 	return &DB{
-		conn: db,
-		User: repository.NewUserRepository(db),
-		Feed: repository.NewFeedRepository(db),
+		conn:     db,
+		User:     repository.NewUserRepository(db),
+		Feed:     repository.NewFeedRepository(db),
+		Playlist: repository.NewPlaylistRepository(db),
 	}
 }

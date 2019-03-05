@@ -54,7 +54,7 @@ func (h *FeedHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h *FeedHandler) Preload(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rawFeedID := chi.URLParam(r, "feedID")
-		userID := r.Context().Value("userID").(uint)
+		userID := r.Context().Value("userID").(int)
 
 		feedID, err := strconv.Atoi(rawFeedID)
 		if err != nil {
@@ -63,7 +63,7 @@ func (h *FeedHandler) Preload(next http.Handler) http.Handler {
 		}
 
 		feed, err := h.feed.Find(uint(feedID))
-		if err != nil || !feed.BelongsTo(userID) {
+		if err != nil || !feed.BelongsTo(uint(userID)) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}

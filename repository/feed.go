@@ -17,6 +17,6 @@ func NewFeedRepository(c *gorm.DB) *FeedRepository {
 
 // Find .
 func (s *FeedRepository) Find(feedID uint) (*models.Feed, error) {
-	var f *models.Feed
-	return f, s.db.First(&f).Error
+	f := &models.Feed{}
+	return f, s.db.Preload("Users").First(f, feedID).Error
 }

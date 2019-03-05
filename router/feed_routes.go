@@ -14,6 +14,8 @@ func (cr *CustomRouter) feedRouter() *chi.Mux {
 	r.Route("/{feedID}", func(r chi.Router) {
 		r.Use(feed.Preload)
 		r.Get("/", feed.Get)
+
+		r.Mount("/playlists", cr.playlistRouter())
 	})
 
 	return r
