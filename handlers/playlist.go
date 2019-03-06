@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -53,7 +54,12 @@ func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // Get .
 func (h *PlaylistHandler) Get(w http.ResponseWriter, r *http.Request) {
+	playlist, err := h.playlist.Find(1)
+	if err != nil {
+		panic(err)
+	}
 
+	json.NewEncoder(w).Encode(playlist)
 }
 
 // Update .

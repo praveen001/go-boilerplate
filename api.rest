@@ -68,9 +68,8 @@ DELETE http://localhost:5000/v1/api/feeds/{feedID} HTTP/1.1
 # Create Playlist
 POST http://localhost:5000/v2/api/feeds/1/playlists
 
-
-POST http://localhost:5000/v2/api/playlists
-
+# Find playlist by ID
+GET http://localhost:5000/v2/api/feeds/1/playlists/1
 
 
 
