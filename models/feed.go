@@ -34,6 +34,7 @@ type Feed struct {
 	Timezone        string         `json:"timezone" gorm:"COLUMN:time_zone"`
 	InputResolution ResolutionName `json:"inputResolution" gorm:"COLUMN:input_video_resolution"`
 	Users           []*User        `json:"users" gorm:"MANY2MANY:feeds_users"`
+	Medias          []*Media       `json:"medias" gorm:"MANY2MANY:feeds_media"`
 }
 
 // BelongsTo .

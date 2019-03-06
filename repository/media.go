@@ -22,3 +22,8 @@ func (r *MediaRepository) FindByFeedID(feedID uint) ([]*models.Media, error) {
 		ID: feedID,
 	}).Error
 }
+
+// DB .
+func (r *MediaRepository) DB() *gorm.DB {
+	return r.db
+}
