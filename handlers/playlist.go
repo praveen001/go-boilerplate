@@ -42,7 +42,6 @@ func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	playlist.FeedID = feed.ID
 	playlist.Status = models.PlaylistStatusNew
-	playlist.GenerateGroupID()
 
 	if err := h.playlist.Save(playlist); err != nil {
 		h.logger.Error("Unable to save playlist", err.Error())
@@ -59,17 +58,16 @@ func (h *PlaylistHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h *PlaylistHandler) Update(w http.ResponseWriter, r *http.Request) {
 	playlist := ctx.GetPlaylist(r.Context())
 
+	oldItems := playlist.Items
 	playlist.Items = []*models.Item{}
-	groupID := playlist.GroupID
 
 	if err := json.NewDecoder(r.Body).Decode(playlist); err != nil {
 		h.logger.Error("Invalid playlist", err.Error())
 		return
 	}
-	playlist.GenerateGroupID()
 	h.playlist.Save(playlist)
 
-	go h.item.DeleteByGroupID(groupID)
+	go h.item.DeleteMulti(oldItems)
 }
 
 // Delete .

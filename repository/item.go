@@ -15,7 +15,11 @@ func NewItemRepository(c *gorm.DB) *ItemRepository {
 	return &ItemRepository{c}
 }
 
-// DeleteByGroupID .
-func (r *ItemRepository) DeleteByGroupID(groupID string) error {
-	return r.db.Delete(models.Item{}, "playlist_group_id = ?", groupID).Error
+// DeleteMulti .
+func (r *ItemRepository) DeleteMulti(items []*models.Item) error {
+	ids := make([]uint, len(items))
+	for i, item := range items {
+		ids[i] = item.ID
+	}
+	return r.db.Where("id in (?)", ids).Delete(models.Item{}).Error
 }

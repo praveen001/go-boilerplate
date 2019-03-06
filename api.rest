@@ -115,4 +115,4 @@ POST http://localhost:5000/v1/api/auth HTTP/1.1
 }
 
 # Get Medias List
-GET http://localhost:5000/v2/api/feeds/1/medias?limit=10&search=d&category=media&category=graphics
+GET http://localhost:5000/v2/api/feeds/1/medias?limit=10&search=d

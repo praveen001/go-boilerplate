@@ -27,9 +27,9 @@ type Item struct {
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 
-	// Belongs to Playlist via GroupID
-	Playlist        *Playlist `json:"-" gorm:"ASSOCIATION_FOREIGNKEY:GroupID"`
-	PlaylistGroupID string    `json:"-"`
+	// Belongs to Playlist
+	Playlist   *Playlist `json:"-"`
+	PlaylistID uint      `json:"-"`
 
 	AssetID   string     `json:"assetId"`
 	Title     string     `json:"title"`
