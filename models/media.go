@@ -48,12 +48,14 @@ type Media struct {
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 
+	// Belongs to many Feeds
+	Feeds []*Feed `json:"feeds" gorm:"MANY2MANY:feeds_media"`
+
 	AssetID          string `json:"assetId"`
 	Title            string `json:"title"`
 	DurationInFrames uint   `json:"-" gorm:"COLUMN:duration"`
 	ImagePreviewSrc  string `json:"imagePreviewSrc"`
 	Status           string `json:"status" gorm:"COLUMN:aasm_state"`
-	
 
 	Duration uint `json:"duration" gorm:"-"`
 }

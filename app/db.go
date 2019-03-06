@@ -15,6 +15,7 @@ type DB struct {
 	Feed     *repository.FeedRepository
 	Playlist *repository.PlaylistRepository
 	Item     *repository.ItemRepository
+	Media    *repository.MediaRepository
 }
 
 // initDB initializes DB connections, and prepares all the Models by providing them with the db connection
@@ -48,5 +49,6 @@ func initRepositories(db *gorm.DB) *DB {
 		Feed:     repository.NewFeedRepository(db),
 		Playlist: repository.NewPlaylistRepository(db),
 		Item:     repository.NewItemRepository(db),
+		Media:    repository.NewMediaRepository(db),
 	}
 }

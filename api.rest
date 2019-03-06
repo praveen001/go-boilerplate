@@ -113,3 +113,6 @@ POST http://localhost:5000/v1/api/auth HTTP/1.1
     "accountCode": "XYZ",
     "feedCode": "ABC"
 }
+
+# Get Medias List
+GET http://localhost:5000/v2/api/feeds/1/medias

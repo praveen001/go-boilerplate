@@ -16,6 +16,7 @@ func (cr *CustomRouter) feedRouter() *chi.Mux {
 		r.Get("/", feed.Get)
 
 		r.Mount("/playlists", cr.playlistRouter())
+		r.Mount("/medias", cr.mediaRouter())
 	})
 
 	return r
