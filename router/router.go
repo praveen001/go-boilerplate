@@ -20,13 +20,13 @@ func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // New initializes the application's router
-func New(ctx *app.Context) http.Handler {
+func New(c *app.Context) http.Handler {
 	cr := &CustomRouter{
 		chi.NewMux(),
-		ctx,
+		c,
 	}
 
-	cr.Use(ctx.DummyAuth, ctx.CORSHandler, ctx.LogHandler, ctx.RecoveryHandler)
+	cr.Use(c.DummyAuth, c.CORSHandler, c.LogHandler, c.RecoveryHandler)
 
 	cr.Route("/v2/api", func(r chi.Router) {
 		r.Mount("/feeds", cr.feedRouter())
