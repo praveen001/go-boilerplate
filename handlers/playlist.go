@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"time"
+	"strconv"
+
+	"github.com/go-chi/chi"
 
 	"github.com/praveen001/go-boilerplate/repository"
 
@@ -16,6 +18,7 @@ import (
 // PlaylistHandler ..
 type PlaylistHandler struct {
 	playlist *repository.PlaylistRepository
+	item     *repository.ItemRepository
 	logger   *app.Logger
 }
 
@@ -23,6 +26,7 @@ type PlaylistHandler struct {
 func NewPlaylistHandler(c *app.Context) *PlaylistHandler {
 	return &PlaylistHandler{
 		playlist: c.DB.Playlist,
+		item:     c.DB.Item,
 		logger:   c.Logger,
 	}
 }
@@ -31,40 +35,43 @@ func NewPlaylistHandler(c *app.Context) *PlaylistHandler {
 func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 	feed := r.Context().Value("feed").(*models.Feed)
 
-	// Arrange
-
-	// Validate
-
-	// Create
-	playlist := &models.Playlist{
-		FeedID: feed.ID,
-		PlayOn: time.Now(),
-		Status: models.PlaylistStatusNew,
-		Type:   models.PlaylistTypeNormal,
-		Items: []*models.Item{
-			&models.Item{
-				AssetID: "Test",
-			},
-		},
-		GroupID: "123-123",
+	playlist := &models.Playlist{}
+	if err := json.NewDecoder(r.Body).Decode(playlist); err != nil {
+		h.logger.Error("Invalid playlist", err.Error())
+		return
 	}
 
-	h.playlist.New(playlist)
+	playlist.FeedID = feed.ID
+	playlist.Status = models.PlaylistStatusNew
+	playlist.GenerateGroupID()
+
+	if err := h.playlist.Save(playlist); err != nil {
+		h.logger.Error("Unable to save playlist", err.Error())
+		return
+	}
 }
 
 // Get .
 func (h *PlaylistHandler) Get(w http.ResponseWriter, r *http.Request) {
-	playlist, err := h.playlist.Find(1)
-	if err != nil {
-		panic(err)
-	}
-
+	playlist := r.Context().Value("playlist")
 	json.NewEncoder(w).Encode(playlist)
 }
 
 // Update .
 func (h *PlaylistHandler) Update(w http.ResponseWriter, r *http.Request) {
+	playlist := r.Context().Value("playlist").(*models.Playlist)
 
+	playlist.Items = []*models.Item{}
+	groupID := playlist.GroupID
+
+	if err := json.NewDecoder(r.Body).Decode(playlist); err != nil {
+		h.logger.Error("Invalid playlist", err.Error())
+		return
+	}
+	playlist.GenerateGroupID()
+	h.playlist.Save(playlist)
+
+	go h.item.DeleteByGroupID(groupID)
 }
 
 // Delete .
@@ -74,13 +81,42 @@ func (h *PlaylistHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 // GetByDate .
 func (h *PlaylistHandler) GetByDate(w http.ResponseWriter, r *http.Request) {
+	rawDate := chi.URLParam(r, "date")
+	date, err := strconv.Atoi(rawDate)
+	if err != nil {
+		h.logger.Error("Invalid date", err.Error())
+		return
+	}
 
+	p, err := h.playlist.FindByDate(uint64(date))
+	if err != nil {
+		h.logger.Error("Unable to find playlists", err.Error())
+		return
+	}
+
+	json.NewEncoder(w).Encode(p)
 }
 
 // Preload .
 func (h *PlaylistHandler) Preload(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Playlist preloading")
-		next.ServeHTTP(w, r)
+		rawPlaylistID := chi.URLParam(r, "playlistID")
+
+		feedID, _ := strconv.Atoi(chi.URLParam(r, "feedID"))
+
+		playlistID, err := strconv.Atoi(rawPlaylistID)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		playlist, err := h.playlist.Find(uint(playlistID))
+		if err != nil || playlist.FeedID != uint(feedID) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "playlist", playlist)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -67,7 +67,6 @@ func (h *FeedHandler) Preload(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-
 		ctx := context.WithValue(r.Context(), "feed", feed)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

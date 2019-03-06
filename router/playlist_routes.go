@@ -10,7 +10,7 @@ func (cr *CustomRouter) playlistRouter() *chi.Mux {
 
 	r := chi.NewRouter()
 	r.Post("/", playlist.Create)
-	r.Get("/date/{date}/", playlist.GetByDate)
+	r.Get("/date/{date}", playlist.GetByDate)
 
 	r.Route("/{playlistID}", func(r chi.Router) {
 		r.Use(playlist.Preload)

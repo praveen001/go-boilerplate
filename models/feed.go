@@ -25,16 +25,15 @@ var (
 // Feed belongs to many users
 // Feed has many playlists
 type Feed struct {
-	ID        uint      `json:"id" gorm:"primary_key"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        uint      `json:"id" gorm:"PRIMARY_KEY"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 
 	Name            string         `json:"name"`
-	Code            string         `json:"code" gorm:"column:channel_code"`
-	Timezone        string         `json:"timezone" gorm:"column:time_zone"`
-	InputResolution ResolutionName `json:"inputResolution" gorm:"column:input_video_resolution"`
-	Users           []*User        `json:"users" gorm:"many2many:feeds_users"`
-	Playlists       []*Playlist    `json:"playlists"`
+	Code            string         `json:"code" gorm:"COLUMN:channel_code"`
+	Timezone        string         `json:"timezone" gorm:"COLUMN:time_zone"`
+	InputResolution ResolutionName `json:"inputResolution" gorm:"COLUMN:input_video_resolution"`
+	Users           []*User        `json:"users" gorm:"MANY2MANY:feeds_users"`
 }
 
 // BelongsTo .

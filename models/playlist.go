@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // PlaylistStatus .
@@ -23,19 +25,19 @@ const (
 
 // Playlist .
 type Playlist struct {
-	ID        uint      `json:"id" gorm:"primary_key"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        uint      `json:"id" gorm:"PRIMARY_KEY"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 
 	// Belongs to Feed
 	Feed   *Feed `json:"feed"`
-	FeedID uint  `json:"feedId"`
+	FeedID uint  `json:"-"`
 
 	// Has Items
-	Items   []*Item `json:"items" gorm:"foreignkey:PlaylistGroupID"`
-	GroupID string  `json:"groupId" gorm:"UNIQUE_INDEX"`
+	Items   []*Item `json:"items" gorm:"FOREIGNKEY:PlaylistGroupID"`
+	GroupID string  `json:"-" gorm:"UNIQUE_INDEX"`
 
-	PlayOn time.Time      `json:"playOn"`
+	PlayOn uint64         `json:"playOn"`
 	Status PlaylistStatus `json:"status"`
 	Type   PlaylistType   `json:"type"`
 }
@@ -43,4 +45,9 @@ type Playlist struct {
 // TableName .
 func (p Playlist) TableName() string {
 	return "new_playlists"
+}
+
+// GenerateGroupID .
+func (p *Playlist) GenerateGroupID() {
+	p.GroupID = uuid.New().String()
 }

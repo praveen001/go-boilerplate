@@ -68,10 +68,40 @@ DELETE http://localhost:5000/v1/api/feeds/{feedID} HTTP/1.1
 # Create Playlist
 POST http://localhost:5000/v2/api/feeds/1/playlists
 
+{
+    "playOn": 1551810600000,
+    "items": [
+        {
+            "assetId": "hello-world",
+            "startTime": 12
+        },
+        {
+            "assetId": "hello-world",
+            "startTime": 12
+        }
+    ],
+    "type": "normal"
+}
+
 # Find playlist by ID
 GET http://localhost:5000/v2/api/feeds/1/playlists/1
 
 
+GET http://localhost:5000/v2/api/feeds/1/playlists/date/1551810600000
+
+# Update
+PUT http://localhost:5000/v2/api/feeds/1/playlists/1
+
+{
+    "playOn": 1551810600000,
+    "items": [
+        {
+            "assetId": "hello-world-2",
+            "startTime": 14
+        }
+    ],
+    "type": "normal"
+}
 
 
 POST http://localhost:5000/v1/api/auth HTTP/1.1
