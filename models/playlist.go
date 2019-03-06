@@ -30,8 +30,9 @@ type Playlist struct {
 	Feed   *Feed `json:"feed"`
 	FeedID uint  `json:"feedId"`
 
-	// Has ItemGroup
-	ItemGroup []*ItemGroup `json:"itemGroup"`
+	// Has Items
+	Items   []*Item `json:"items"`
+	GroupID string  `json:"groupId"`
 
 	PlayOn time.Time      `json:"playOn"`
 	Status PlaylistStatus `json:"status"`

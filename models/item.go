@@ -8,9 +8,9 @@ type Item struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 
-	// Belongs to ItemGroup
-	ItemGroup   *ItemGroup `json:"itemGroup"`
-	ItemGroupID uint       `json:"itemGroupId"`
+	// Belongs to Playlist via GroupID
+	Playlist        *Playlist `json:"playlist" gorm:"association_foreignkey:GroupID"`
+	PlaylistGroupID uint      `json:"playlistGroupId"`
 
 	AssetID   string    `json:"assetId"`
 	StartTime time.Time `json:"startTime"`
