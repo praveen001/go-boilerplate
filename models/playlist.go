@@ -9,7 +9,8 @@ type PlaylistStatus string
 
 // .
 const (
-	Published PlaylistStatus = "published"
+	PlaylistStatusPublished PlaylistStatus = "published"
+	PlaylistStatusNew                      = "new"
 )
 
 // PlaylistType .
@@ -17,7 +18,7 @@ type PlaylistType string
 
 // .
 const (
-	Normal PlaylistType = "normal"
+	PlaylistTypeNormal PlaylistType = "normal"
 )
 
 // Playlist .
@@ -31,8 +32,8 @@ type Playlist struct {
 	FeedID uint  `json:"feedId"`
 
 	// Has Items
-	Items   []*Item `json:"items"`
-	GroupID string  `json:"groupId"`
+	Items   []*Item `json:"items" gorm:"foreignkey:PlaylistGroupID"`
+	GroupID string  `json:"groupId" gorm:"UNIQUE_INDEX"`
 
 	PlayOn time.Time      `json:"playOn"`
 	Status PlaylistStatus `json:"status"`

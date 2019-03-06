@@ -28,7 +28,7 @@ func (c *Context) initDB() {
 
 // migrate runs the migrations
 func (db *DB) migrate() {
-	db.conn.AutoMigrate(models.Playlist{}, models.ItemGroup{}, models.Item{})
+	db.conn.AutoMigrate(models.Playlist{}, models.Item{})
 }
 
 // close the database connection

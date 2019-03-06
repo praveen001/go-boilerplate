@@ -36,9 +36,16 @@ func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	// Create
 	playlist := &models.Playlist{
-		FeedID:    feed.ID,
-		PlayOn:    time.Now(),
-		ItemGroup: &models.ItemGroup{},
+		FeedID: feed.ID,
+		PlayOn: time.Now(),
+		Status: models.PlaylistStatusNew,
+		Type:   models.PlaylistTypeNormal,
+		Items: []*models.Item{
+			&models.Item{
+				AssetID: "Test",
+			},
+		},
+		GroupID: "123-123",
 	}
 
 	h.playlist.New(playlist)
