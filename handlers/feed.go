@@ -1,15 +1,13 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/praveen001/go-boilerplate/app"
+	"github.com/praveen001/go-boilerplate/handlers/ctx"
+	"github.com/praveen001/go-boilerplate/handlers/params"
 	"github.com/praveen001/go-boilerplate/repository"
-
-	"github.com/go-chi/chi"
 )
 
 // FeedHandler .
@@ -34,9 +32,9 @@ func NewFeedHandler(c *app.Context) *FeedHandler {
 
 // List .
 func (h *FeedHandler) List(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(uint)
+	user := ctx.GetUser(r.Context())
 
-	user, err := h.user.Find(userID)
+	user, err := h.user.Find(user.ID)
 	if err != nil {
 		h.logger.Error("Unable to fetch feeds", err)
 		return
@@ -53,21 +51,21 @@ func (h *FeedHandler) Get(w http.ResponseWriter, r *http.Request) {
 // Preload .
 func (h *FeedHandler) Preload(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rawFeedID := chi.URLParam(r, "feedID")
-		userID := r.Context().Value("userID").(int)
+		user := ctx.GetUser(r.Context())
 
-		feedID, err := strconv.Atoi(rawFeedID)
+		feedID, err := params.GetUInt(r, "feedID")
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		feed, err := h.feed.Find(uint(feedID))
-		if err != nil || !feed.BelongsTo(uint(userID)) {
+		feed, err := h.feed.Find(feedID)
+		if err != nil || !feed.BelongsTo(user.ID) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "feed", feed)
-		next.ServeHTTP(w, r.WithContext(ctx))
+
+		c := ctx.SetFeed(r.Context(), feed)
+		next.ServeHTTP(w, r.WithContext(c))
 	})
 }

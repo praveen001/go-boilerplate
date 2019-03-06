@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/praveen001/go-boilerplate/handlers/ctx"
+	"github.com/praveen001/go-boilerplate/handlers/params"
 
 	"github.com/praveen001/go-boilerplate/repository"
 
@@ -33,7 +32,7 @@ func NewPlaylistHandler(c *app.Context) *PlaylistHandler {
 
 // Create .
 func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
-	feed := r.Context().Value("feed").(*models.Feed)
+	feed := ctx.GetFeed(r.Context())
 
 	playlist := &models.Playlist{}
 	if err := json.NewDecoder(r.Body).Decode(playlist); err != nil {
@@ -53,13 +52,12 @@ func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // Get .
 func (h *PlaylistHandler) Get(w http.ResponseWriter, r *http.Request) {
-	playlist := r.Context().Value("playlist")
-	json.NewEncoder(w).Encode(playlist)
+	json.NewEncoder(w).Encode(ctx.GetPlaylist(r.Context()))
 }
 
 // Update .
 func (h *PlaylistHandler) Update(w http.ResponseWriter, r *http.Request) {
-	playlist := r.Context().Value("playlist").(*models.Playlist)
+	playlist := ctx.GetPlaylist(r.Context())
 
 	playlist.Items = []*models.Item{}
 	groupID := playlist.GroupID
@@ -81,8 +79,7 @@ func (h *PlaylistHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 // GetByDate .
 func (h *PlaylistHandler) GetByDate(w http.ResponseWriter, r *http.Request) {
-	rawDate := chi.URLParam(r, "date")
-	date, err := strconv.Atoi(rawDate)
+	date, err := params.GetInt(r, "date")
 	if err != nil {
 		h.logger.Error("Invalid date", err.Error())
 		return
@@ -100,23 +97,21 @@ func (h *PlaylistHandler) GetByDate(w http.ResponseWriter, r *http.Request) {
 // Preload .
 func (h *PlaylistHandler) Preload(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rawPlaylistID := chi.URLParam(r, "playlistID")
+		feedID, _ := params.GetUInt(r, "feedID")
 
-		feedID, _ := strconv.Atoi(chi.URLParam(r, "feedID"))
-
-		playlistID, err := strconv.Atoi(rawPlaylistID)
+		playlistID, err := params.GetUInt(r, "playlistID")
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		playlist, err := h.playlist.Find(uint(playlistID))
-		if err != nil || playlist.FeedID != uint(feedID) {
+		playlist, err := h.playlist.Find(playlistID)
+		if err != nil || playlist.FeedID != feedID {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "playlist", playlist)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		c := ctx.SetPlaylist(r.Context(), playlist)
+		next.ServeHTTP(w, r.WithContext(c))
 	})
 }

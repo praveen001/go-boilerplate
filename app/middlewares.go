@@ -1,12 +1,14 @@
 package app
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/praveen001/go-boilerplate/handlers/ctx"
+
 	"github.com/go-chi/chi/middleware"
+	"github.com/praveen001/go-boilerplate/models"
 	"github.com/rs/cors"
 )
 
@@ -51,7 +53,7 @@ func (c *Context) LogHandler(h http.Handler) http.Handler {
 func (c *Context) DummyAuth(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Added userID")
-		ctx := context.WithValue(r.Context(), "userID", 2)
-		h.ServeHTTP(w, r.WithContext(ctx))
+		c := ctx.SetUser(r.Context(), &models.User{ID: 2})
+		h.ServeHTTP(w, r.WithContext(c))
 	})
 }
