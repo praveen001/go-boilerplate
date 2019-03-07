@@ -103,6 +103,9 @@ PUT http://localhost:5000/v2/api/feeds/1/playlists/1
     "type": "normal"
 }
 
+# DELETE PLAYLIST
+DELETE http://localhost:5000/v2/api/feeds/1/playlists/1
+
 
 POST http://localhost:5000/v1/api/auth HTTP/1.1
 

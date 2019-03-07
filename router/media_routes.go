@@ -2,14 +2,11 @@ package router
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/praveen001/go-boilerplate/handlers"
 )
 
 func (cr *CustomRouter) mediaRouter() *chi.Mux {
-	media := handlers.NewMediaHandler(cr.context)
-
 	r := chi.NewRouter()
-	r.Get("/", media.List)
+	r.Get("/", cr.handler.ListMedias)
 
 	return r
 }

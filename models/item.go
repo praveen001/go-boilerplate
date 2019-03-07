@@ -23,19 +23,19 @@ const (
 
 // Item ..
 type Item struct {
-	ID        uint      `json:"id" gorm:"PRIMARY_KEY"`
+	ID        int       `json:"id" gorm:"PRIMARY_KEY"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 
 	// Belongs to Playlist
 	Playlist   *Playlist `json:"-"`
-	PlaylistID uint      `json:"-"`
+	PlaylistID int       `json:"-"`
 
 	AssetID   string     `json:"assetId"`
 	Title     string     `json:"title"`
-	SegmentID uint       `json:"segmentId"`
-	StartTime uint       `json:"startTime"`
-	Duration  uint       `json:"duration"`
+	SegmentID int        `json:"segmentId"`
+	StartTime int        `json:"startTime"`
+	Duration  int        `json:"duration"`
 	Locked    bool       `json:"locked"`
 	Status    ItemStatus `json:"status"`
 	ItemType  ItemType   `json:"itemType"`

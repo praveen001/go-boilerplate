@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 // ResolutionName .
@@ -25,29 +27,45 @@ var (
 // Feed belongs to many users
 // Feed has many playlists
 type Feed struct {
-	ID        uint      `json:"id" gorm:"PRIMARY_KEY"`
+	ID        int       `json:"id" gorm:"PRIMARY_KEY"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
+
+	Users     []*User     `json:"-" gorm:"MANY2MANY:feeds_users"`
+	Medias    []*Media    `json:"-" gorm:"MANY2MANY:feeds_media"`
+	Playlists []*Playlist `json:"-"`
+	Account   *Account    `json:"account"`
+	AccountID int         `json:"-"`
 
 	Name            string         `json:"name"`
 	Code            string         `json:"code" gorm:"COLUMN:channel_code"`
 	Timezone        string         `json:"timezone" gorm:"COLUMN:time_zone"`
-	InputResolution ResolutionName `json:"inputResolution" gorm:"COLUMN:input_video_resolution"`
-	Users           []*User        `json:"users" gorm:"MANY2MANY:feeds_users"`
-	Medias          []*Media       `json:"medias" gorm:"MANY2MANY:feeds_media"`
+	InputResolution ResolutionName `json:"-" gorm:"COLUMN:input_video_resolution"`
+
+	FPS int `json:"fps" gorm:"-"`
 }
 
-// BelongsTo .
-func (f *Feed) BelongsTo(userID uint) bool {
-	if f == nil {
-		return false
-	}
+// AfterFind .
+func (f *Feed) AfterFind() error {
+	// TODO: Find FPS based on Input Resolution
+	f.FPS = 25
 
-	for _, u := range f.Users {
-		if u.ID == userID {
-			return true
-		}
-	}
+	f.Timezone = f.Timezone + "(GMT +0530)"
 
-	return false
+	return nil
+}
+
+// Find .
+func (f *Feed) Find(db *gorm.DB) error {
+	return db.First(f, f).Error
+}
+
+// FindUserFeed .
+func FindUserFeed(db *gorm.DB, user *User, feed *Feed) error {
+	return db.Model(user).Related(feed, "Feeds").Where(feed).Error
+}
+
+// FindUserFeeds .
+func FindUserFeeds(db *gorm.DB, user *User, feeds *[]*Feed) error {
+	return db.Model(user).Related(feeds, "Feeds").Error
 }

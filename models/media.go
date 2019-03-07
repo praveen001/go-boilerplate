@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 /*
 +----------------------+---------------+------+-----+---------+----------------+
@@ -42,20 +44,41 @@ import "time"
 +----------------------+---------------+------+-----+---------+----------------+
 */
 
+//
+var (
+	MediaCategory = map[string]int{
+		"media":         1,
+		"rescue":        2,
+		"graphics":      3,
+		"subtitles":     4,
+		"audio":         5,
+		"signatures":    7,
+		"media_segment": 8,
+	}
+)
+
 // Media .
 type Media struct {
-	ID        uint      `json:"id" gorm:"PRIMARY_KEY"`
+	ID        int       `json:"id" gorm:"PRIMARY_KEY"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 
 	// Belongs to many Feeds
 	Feeds []*Feed `json:"feeds" gorm:"MANY2MANY:feeds_media"`
 
-	AssetID          string `json:"assetId"`
-	Title            string `json:"title"`
-	DurationInFrames uint   `json:"-" gorm:"COLUMN:duration"`
-	ImagePreviewSrc  string `json:"imagePreviewSrc"`
-	Status           string `json:"status" gorm:"COLUMN:aasm_state"`
+	// Has many segments
+	Segments []*Segment `json:"segments"`
 
-	Duration uint `json:"duration" gorm:"-"`
+	AssetID         string `json:"assetId"`
+	Title           string `json:"title"`
+	Duration        int    `json:"duration" gorm:"COLUMN:duration"`
+	ImagePreviewSrc string `json:"imagePreviewSrc"`
+	Status          string `json:"status" gorm:"COLUMN:aasm_state"`
+	Category        int    `json:"category"`
+	TCIn            string `json:"tcIn" gorm:"COLUMN:tc_in"`
+}
+
+// AfterFind .
+func (m *Media) AfterFind() error {
+	return nil
 }

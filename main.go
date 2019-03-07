@@ -7,6 +7,7 @@ import (
 	"os/signal"
 
 	"github.com/praveen001/go-boilerplate/app"
+	"github.com/praveen001/go-boilerplate/handlers"
 	"github.com/praveen001/go-boilerplate/router"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -37,8 +38,9 @@ func main() {
 	conf.Environment = app.Environment(environ)
 
 	app := app.New(&conf)
-	r := router.New(app)
-	app.StartWith(r)
+
+	handler := &handlers.Handler{app}
+	app.StartWith(router.New(handler))
 
 	// Listen of Interrupt signals
 	c := make(chan os.Signal, 1)

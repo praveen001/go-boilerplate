@@ -1,20 +1,24 @@
-package app
+package handlers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
-	"github.com/praveen001/go-boilerplate/handlers/ctx"
-
 	"github.com/go-chi/chi/middleware"
+	"github.com/praveen001/go-boilerplate/app"
+	"github.com/praveen001/go-boilerplate/handlers/ctx"
 	"github.com/praveen001/go-boilerplate/models"
 	"github.com/rs/cors"
 )
 
+// Handler .
+type Handler struct {
+	*app.Context
+}
+
 // RecoveryHandler returns 500 status when handler panics.
 // Writes error to application log
-func (c *Context) RecoveryHandler(h http.Handler) http.Handler {
+func (h *Handler) RecoveryHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		defer func() {
@@ -27,33 +31,33 @@ func (c *Context) RecoveryHandler(h http.Handler) http.Handler {
 				default:
 					err = errors.New("Unknown error")
 				}
-				c.Logger.Error(err.Error())
+				h.Logger.Error(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}()
 
-		h.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
 	})
 }
 
 // CORSHandler handles cors requests
-func (c *Context) CORSHandler(h http.Handler) http.Handler {
+func (h *Handler) CORSHandler(next http.Handler) http.Handler {
 	return cors.New(cors.Options{
 		AllowedHeaders: []string{"authorization", "content-type"},
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
-	}).Handler(h)
+	}).Handler(next)
 }
 
 // LogHandler writes access log
-func (c *Context) LogHandler(h http.Handler) http.Handler {
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: c.Logger, NoColor: true})(h)
+func (h *Handler) LogHandler(next http.Handler) http.Handler {
+	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: h.Logger, NoColor: true})(next)
 }
 
 // DummyAuth .
-func (c *Context) DummyAuth(h http.Handler) http.Handler {
+func (h *Handler) DummyAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Added userID")
-		c := ctx.SetUser(r.Context(), &models.User{ID: 2})
-		h.ServeHTTP(w, r.WithContext(c))
+		c := ctx.SetUser(r.Context(), &models.User{ID: 4})
+
+		next.ServeHTTP(w, r.WithContext(c))
 	})
 }

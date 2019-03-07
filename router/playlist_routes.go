@@ -2,21 +2,18 @@ package router
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/praveen001/go-boilerplate/handlers"
 )
 
 func (cr *CustomRouter) playlistRouter() *chi.Mux {
-	playlist := handlers.NewPlaylistHandler(cr.context)
-
 	r := chi.NewRouter()
-	r.Post("/", playlist.Create)
-	r.Get("/date/{date}", playlist.GetByDate)
+	r.Post("/", cr.handler.CreatePlaylist)
+	r.Get("/date/{date}", cr.handler.GetPlaylistByDate)
 
 	r.Route("/{playlistID}", func(r chi.Router) {
-		r.Use(playlist.Preload)
-		r.Get("/", playlist.Get)
-		r.Put("/", playlist.Update)
-		r.Delete("/", playlist.Delete)
+		r.Use(cr.handler.PreloadPlaylist)
+		r.Get("/", cr.handler.GetPlaylist)
+		r.Put("/", cr.handler.UpdatePlaylist)
+		r.Delete("/", cr.handler.DeletePlaylist)
 	})
 
 	return r

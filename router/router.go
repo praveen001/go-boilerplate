@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/praveen001/go-boilerplate/app"
+	"github.com/praveen001/go-boilerplate/handlers"
 )
 
 // CustomRouter wrapps chi MUX router, and application context
@@ -12,7 +12,7 @@ import (
 // Allows passing application context to handlers
 type CustomRouter struct {
 	*chi.Mux
-	context *app.Context
+	handler *handlers.Handler
 }
 
 func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +20,7 @@ func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // New initializes the application's router
-func New(c *app.Context) http.Handler {
+func New(c *handlers.Handler) http.Handler {
 	cr := &CustomRouter{
 		chi.NewMux(),
 		c,

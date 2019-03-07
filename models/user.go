@@ -7,7 +7,7 @@ import (
 // User ..
 // User has many feeds
 type User struct {
-	ID        uint      `json:"id" gorm:"PRIMARY_KEY"`
+	ID        int       `json:"id" gorm:"PRIMARY_KEY"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 

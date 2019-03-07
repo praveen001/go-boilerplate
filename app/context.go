@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/jinzhu/gorm"
+	"github.com/praveen001/go-boilerplate/models"
+
 	"github.com/gomodule/redigo/redis"
 )
 
 // Context ..
 type Context struct {
-	DB        *DB
+	DB        *gorm.DB
 	RedisPool *redis.Pool
 	Logger    *Logger
 	Config    *Config
@@ -30,7 +33,7 @@ func New(conf *Config) *Context {
 	c.initDB()
 	c.initRedis()
 
-	c.DB.migrate()
+	c.DB.AutoMigrate(models.Playlist{}, models.Item{})
 
 	return c
 }
@@ -54,7 +57,7 @@ func (c *Context) StartWith(router http.Handler) {
 
 // Shutdown closes all the open connections, and finally shutsdown the HTTP server.
 func (c *Context) Shutdown(ctx context.Context) {
-	c.DB.close()
+	c.DB.Close()
 	c.RedisPool.Close()
 
 	c.srv.Shutdown(ctx)
