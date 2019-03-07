@@ -2,15 +2,18 @@ package router
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/praveen001/go-boilerplate/handlers"
 )
 
 func (cr *CustomRouter) feedRouter() *chi.Mux {
+	feed := handlers.NewFeedHandler(cr.appCtx)
+
 	r := chi.NewRouter()
-	r.Get("/", cr.handler.ListFeeds)
+	r.Get("/", feed.List)
 
 	r.Route("/{feedID}", func(r chi.Router) {
-		r.Use(cr.handler.PreloadFeed)
-		r.Get("/", cr.handler.GetFeed)
+		r.Use(feed.Preload)
+		r.Get("/", feed.Get)
 
 		r.Mount("/playlists", cr.playlistRouter())
 		r.Mount("/medias", cr.mediaRouter())

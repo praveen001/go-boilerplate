@@ -11,14 +11,21 @@ import (
 	"github.com/rs/cors"
 )
 
-// Handler .
-type Handler struct {
-	*app.Context
+// BaseHandler .
+type BaseHandler struct {
+	logger *app.Logger
+}
+
+// NewBaseHandler .
+func NewBaseHandler(c *app.Context) *BaseHandler {
+	return &BaseHandler{
+		logger: c.Logger,
+	}
 }
 
 // RecoveryHandler returns 500 status when handler panics.
 // Writes error to application log
-func (h *Handler) RecoveryHandler(next http.Handler) http.Handler {
+func (h *BaseHandler) RecoveryHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		defer func() {
@@ -31,7 +38,7 @@ func (h *Handler) RecoveryHandler(next http.Handler) http.Handler {
 				default:
 					err = errors.New("Unknown error")
 				}
-				h.Logger.Error(err.Error())
+				h.logger.Error(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}()
@@ -41,7 +48,7 @@ func (h *Handler) RecoveryHandler(next http.Handler) http.Handler {
 }
 
 // CORSHandler handles cors requests
-func (h *Handler) CORSHandler(next http.Handler) http.Handler {
+func (h *BaseHandler) CORSHandler(next http.Handler) http.Handler {
 	return cors.New(cors.Options{
 		AllowedHeaders: []string{"authorization", "content-type"},
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
@@ -49,12 +56,12 @@ func (h *Handler) CORSHandler(next http.Handler) http.Handler {
 }
 
 // LogHandler writes access log
-func (h *Handler) LogHandler(next http.Handler) http.Handler {
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: h.Logger, NoColor: true})(next)
+func (h *BaseHandler) LogHandler(next http.Handler) http.Handler {
+	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: h.logger, NoColor: true})(next)
 }
 
 // DummyAuth .
-func (h *Handler) DummyAuth(next http.Handler) http.Handler {
+func (h *BaseHandler) DummyAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c := ctx.SetUser(r.Context(), &models.User{ID: 4})
 

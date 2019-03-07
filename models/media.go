@@ -2,6 +2,9 @@ package models
 
 import (
 	"time"
+
+	"github.com/jinzhu/gorm"
+	"github.com/praveen001/go-boilerplate/utils"
 )
 
 /*
@@ -75,10 +78,19 @@ type Media struct {
 	ImagePreviewSrc string `json:"imagePreviewSrc"`
 	Status          string `json:"status" gorm:"COLUMN:aasm_state"`
 	Category        int    `json:"category"`
-	TCIn            string `json:"tcIn" gorm:"COLUMN:tc_in"`
+	TCInTimecode    string `json:"tc" gorm:"COLUMN:tc_in"`
+
+	TCIn int `json:"tcIn" gorm:"-"`
 }
 
 // AfterFind .
-func (m *Media) AfterFind() error {
+func (m *Media) AfterFind(db *gorm.DB) error {
+	if err := db.Model(m).Related(&m.Feeds, "Feeds").Error; err != nil {
+		return err
+	}
+
+	feed := m.Feeds[0]
+	m.TCIn = utils.TimecodeToFrames(m.TCInTimecode, feed.FPS)
+
 	return nil
 }

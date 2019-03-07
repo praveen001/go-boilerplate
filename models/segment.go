@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 /*
@@ -39,10 +41,13 @@ type Segment struct {
 	Offset         int  `json:"offset"` // Used to compute SOM and EO gorm:"-"M
 	FileOffset     int  `json:"-" gorm:"-"`
 	StartTimecode  int  `json:"-" gorm:"-"`
+
+	SOM int `json:"som" gorm:"-"`
+	EOM int `json:"eom" gorm:"-"`
 }
 
 // AfterFind .
-func (s *Segment) AfterFind() error {
+func (s *Segment) AfterFind(db *gorm.DB) error {
 	if len(s.Data) == 0 {
 		return nil
 	}
@@ -75,6 +80,14 @@ func (s *Segment) AfterFind() error {
 
 		}
 	}
+
+	s.Media = &Media{ID: s.MediaID}
+	if err := db.Model(s).Related(s.Media).Error; err != nil {
+		return err
+	}
+
+	s.SOM = s.Offset + s.Media.Duration
+	s.EOM = s.Offset + s.Duration + s.Media.Duration
 
 	return nil
 }

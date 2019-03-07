@@ -4,13 +4,32 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/praveen001/go-boilerplate/app"
+	"github.com/praveen001/go-boilerplate/repository"
+
 	"github.com/praveen001/go-boilerplate/handlers/ctx"
 	"github.com/praveen001/go-boilerplate/handlers/params"
 	"github.com/praveen001/go-boilerplate/models"
 )
 
-// CreatePlaylist .
-func (h *Handler) CreatePlaylist(w http.ResponseWriter, r *http.Request) {
+// PlaylistHandler .
+type PlaylistHandler struct {
+	logger *app.Logger
+
+	playlist *repository.PlaylistRepository
+}
+
+// NewPlaylistHandler .
+func NewPlaylistHandler(c *app.Context) *PlaylistHandler {
+	return &PlaylistHandler{
+		logger: c.Logger,
+
+		playlist: c.DB.Playlist,
+	}
+}
+
+// Create .
+func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 	feed := ctx.GetFeed(r.Context())
 
 	playlist := &models.Playlist{
@@ -18,27 +37,25 @@ func (h *Handler) CreatePlaylist(w http.ResponseWriter, r *http.Request) {
 		Status: models.PlaylistStatusNew,
 	}
 	if err := json.NewDecoder(r.Body).Decode(playlist); err != nil {
-		h.Logger.Error("Invalid playlist", err.Error())
+		h.logger.Error("Invalid playlist", err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if err := playlist.Create(h.DB); err != nil {
-		h.Logger.Error("Unable to create playlist", err.Error())
+	if err := h.playlist.Create(playlist); err != nil {
+		h.logger.Error("Unable to create playlist", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
 
-// GetPlaylist .
-func (h *Handler) GetPlaylist(w http.ResponseWriter, r *http.Request) {
-	playlist := ctx.GetPlaylist(r.Context())
-
-	json.NewEncoder(w).Encode(playlist)
+// Read .
+func (h *PlaylistHandler) Read(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(ctx.GetPlaylist(r.Context()))
 }
 
-// UpdatePlaylist .
-func (h *Handler) UpdatePlaylist(w http.ResponseWriter, r *http.Request) {
+// Update .
+func (h *PlaylistHandler) Update(w http.ResponseWriter, r *http.Request) {
 	// playlist := ctx.GetPlaylist(r.Context())
 
 	// oldItems := playlist.Items
@@ -53,52 +70,52 @@ func (h *Handler) UpdatePlaylist(w http.ResponseWriter, r *http.Request) {
 	// go h.item.DeleteMulti(oldItems)
 }
 
-// DeletePlaylist .
-func (h *Handler) DeletePlaylist(w http.ResponseWriter, r *http.Request) {
+// Delete .
+func (h *PlaylistHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	playlist := ctx.GetPlaylist(r.Context())
 
-	if err := playlist.Delete(h.DB); err != nil {
-		h.Logger.Error("Unable to delete playlist", err.Error())
+	if err := h.playlist.Delete(playlist); err != nil {
+		h.logger.Error("Unable to delete playlist", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
 
-// GetPlaylistByDate .
-func (h *Handler) GetPlaylistByDate(w http.ResponseWriter, r *http.Request) {
+// ReadByDate .
+func (h *PlaylistHandler) ReadByDate(w http.ResponseWriter, r *http.Request) {
 	feed := ctx.GetFeed(r.Context())
 
 	date, err := params.GetInt(r, "date")
 	if err != nil {
-		h.Logger.Error("Invalid date", err.Error())
+		h.logger.Error("Invalid date", err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	playlists, err := models.FindPlaylistByDate(h.DB, date, feed.ID)
+	playlists, err := h.playlist.FindPlaylistByDate(feed.ID, date)
 	if err != nil {
-		h.Logger.Error("Unable to find playlists for date", date, err.Error())
+		h.logger.Error("Unable to find playlists for date", date, err.Error())
 		return
 	}
 
 	json.NewEncoder(w).Encode(playlists)
 }
 
-// PreloadPlaylist .
-func (h *Handler) PreloadPlaylist(next http.Handler) http.Handler {
+// Preload .
+func (h *PlaylistHandler) Preload(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		feed := ctx.GetFeed(r.Context())
 
 		playlistID, err := params.GetInt(r, "playlistID")
 		if err != nil {
-			h.Logger.Error("Invalid playlist id", playlistID, err.Error())
+			h.logger.Error("Invalid playlist id", playlistID, err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		playlist := &models.Playlist{ID: playlistID, FeedID: feed.ID}
-		if err := playlist.Find(h.DB); err != nil {
-			h.Logger.Error("Unable to find playlist", playlistID, err.Error())
+		playlist, err := h.playlist.Read(playlistID)
+		if err != nil || playlist.FeedID != feed.ID {
+			h.logger.Error("Unable to find playlist", playlistID, err.Error())
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}

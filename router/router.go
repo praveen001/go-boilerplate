@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/praveen001/go-boilerplate/app"
 	"github.com/praveen001/go-boilerplate/handlers"
 )
 
@@ -12,7 +13,7 @@ import (
 // Allows passing application context to handlers
 type CustomRouter struct {
 	*chi.Mux
-	handler *handlers.Handler
+	appCtx *app.Context
 }
 
 func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -20,17 +21,18 @@ func (cr *CustomRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // New initializes the application's router
-func New(c *handlers.Handler) http.Handler {
+func New(c *app.Context) http.Handler {
 	cr := &CustomRouter{
 		chi.NewMux(),
 		c,
 	}
 
-	cr.Use(c.DummyAuth, c.CORSHandler, c.LogHandler, c.RecoveryHandler)
+	base := handlers.NewBaseHandler(c)
+
+	cr.Use(base.DummyAuth, base.CORSHandler, base.LogHandler, base.RecoveryHandler)
 
 	cr.Route("/v2/api", func(r chi.Router) {
 		r.Mount("/feeds", cr.feedRouter())
-		// r.Mount("/playlists", cr.playlistRouter())
 	})
 
 	return cr

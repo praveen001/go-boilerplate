@@ -2,25 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/jinzhu/gorm"
-)
-
-// ResolutionName .
-type ResolutionName string
-
-// Resolution .
-type Resolution struct {
-	Resolution string
-	FrameRate  float64
-	Interlaced bool
-	VideoMode  string
-	MaxGFXArea uint
-}
-
-//
-var (
-	HD1080i29_97HZ = Resolution{}
 )
 
 // Feed ..
@@ -37,35 +18,20 @@ type Feed struct {
 	Account   *Account    `json:"account"`
 	AccountID int         `json:"-"`
 
-	Name            string         `json:"name"`
-	Code            string         `json:"code" gorm:"COLUMN:channel_code"`
-	Timezone        string         `json:"timezone" gorm:"COLUMN:time_zone"`
-	InputResolution ResolutionName `json:"-" gorm:"COLUMN:input_video_resolution"`
+	Name            string `json:"name"`
+	Code            string `json:"code" gorm:"COLUMN:channel_code"`
+	Timezone        string `json:"timezone" gorm:"COLUMN:time_zone"`
+	InputResolution string `json:"-" gorm:"COLUMN:input_video_resolution"`
 
-	FPS int `json:"fps" gorm:"-"`
+	FPS float64 `json:"fps" gorm:"-"`
 }
 
 // AfterFind .
 func (f *Feed) AfterFind() error {
-	// TODO: Find FPS based on Input Resolution
-	f.FPS = 25
+	f.FPS = ResolutionMap[f.InputResolution].FrameRate
 
+	// TODO: Need to fix this
 	f.Timezone = f.Timezone + "(GMT +0530)"
 
 	return nil
-}
-
-// Find .
-func (f *Feed) Find(db *gorm.DB) error {
-	return db.First(f, f).Error
-}
-
-// FindUserFeed .
-func FindUserFeed(db *gorm.DB, user *User, feed *Feed) error {
-	return db.Model(user).Related(feed, "Feeds").Where(feed).Error
-}
-
-// FindUserFeeds .
-func FindUserFeeds(db *gorm.DB, user *User, feeds *[]*Feed) error {
-	return db.Model(user).Related(feeds, "Feeds").Error
 }

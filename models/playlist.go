@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 // PlaylistStatus .
@@ -44,29 +42,4 @@ type Playlist struct {
 // TableName .
 func (p Playlist) TableName() string {
 	return "new_playlists"
-}
-
-// Create .
-func (p *Playlist) Create(db *gorm.DB) error {
-	return db.Create(p).Error
-}
-
-// Find .
-func (p *Playlist) Find(db *gorm.DB) error {
-	return db.Preload("Items").Find(p).Error
-}
-
-// Delete .
-func (p *Playlist) Delete(db *gorm.DB) error {
-	return db.Delete(p).Error
-}
-
-// FindPlaylistByDate .
-func FindPlaylistByDate(db *gorm.DB, date int, feedID int) ([]*Playlist, error) {
-	var playlists []*Playlist
-
-	return playlists, db.Find(&playlists, Playlist{
-		PlayOn: date,
-		FeedID: feedID,
-	}).Error
 }

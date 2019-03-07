@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	"github.com/praveen001/go-boilerplate/models"
 
 	"github.com/gomodule/redigo/redis"
@@ -13,7 +12,7 @@ import (
 
 // Context ..
 type Context struct {
-	DB        *gorm.DB
+	DB        *DB
 	RedisPool *redis.Pool
 	Logger    *Logger
 	Config    *Config
