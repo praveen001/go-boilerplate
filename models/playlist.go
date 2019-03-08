@@ -34,7 +34,7 @@ type Playlist struct {
 	// Has Items
 	Items []*Item `json:"items"`
 
-	PlayOn int            `json:"playOn"`
+	PlayOn time.Time      `json:"playOn"`
 	Status PlaylistStatus `json:"status"`
 	Type   PlaylistType   `json:"type"`
 }

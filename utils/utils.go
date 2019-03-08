@@ -1,13 +1,16 @@
 package utils
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
 
 // TimecodeToFrames .
 func TimecodeToFrames(tc string, fps float64) int {
+	if tc == "" {
+		return 0
+	}
+
 	var msec int
 	if strings.Contains(tc, ".") {
 		msec = TimecodeMsecToMsec(tc, fps)
@@ -21,7 +24,6 @@ func TimecodeToFrames(tc string, fps float64) int {
 // TimecodeFramesToMsec .
 func TimecodeFramesToMsec(tc string, fps float64) int {
 	parts := strings.Split(tc, ":")
-	fmt.Println(parts)
 	msec := 0
 
 	hours, _ := strconv.Atoi(parts[0])
@@ -47,5 +49,5 @@ func TimecodeMsecToMsec(tc string, fps float64) int {
 
 // MsecToFrames .
 func MsecToFrames(msec int, fps float64) int {
-	return 0
+	return int(float64(msec) / fps)
 }

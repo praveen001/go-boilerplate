@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/praveen001/go-boilerplate/models"
 )
@@ -26,7 +28,7 @@ func (r *PlaylistRepository) Read(playlistID int) (*models.Playlist, error) {
 		ID: playlistID,
 	}
 
-	return nil, r.db.Preload("Items").Find(p).Error
+	return p, r.db.Preload("Items").Find(p).Error
 }
 
 // Delete .
@@ -35,7 +37,7 @@ func (r *PlaylistRepository) Delete(playlist *models.Playlist) error {
 }
 
 // FindPlaylistByDate .
-func (r *PlaylistRepository) FindPlaylistByDate(feedID int, date int) ([]*models.Playlist, error) {
+func (r *PlaylistRepository) FindPlaylistByDate(feedID int, date time.Time) ([]*models.Playlist, error) {
 	var playlists []*models.Playlist
 
 	return playlists, r.db.Find(&playlists, models.Playlist{

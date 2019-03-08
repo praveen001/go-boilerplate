@@ -43,9 +43,7 @@ func (h *FeedHandler) List(w http.ResponseWriter, r *http.Request) {
 
 // Get feed by ID
 func (h *FeedHandler) Get(w http.ResponseWriter, r *http.Request) {
-	feed := ctx.GetFeed(r.Context())
-
-	json.NewEncoder(w).Encode(feed)
+	json.NewEncoder(w).Encode(ctx.GetFeed(r.Context()))
 }
 
 // Preload .

@@ -15,7 +15,7 @@ type Feed struct {
 	Users     []*User     `json:"-" gorm:"MANY2MANY:feeds_users"`
 	Medias    []*Media    `json:"-" gorm:"MANY2MANY:feeds_media"`
 	Playlists []*Playlist `json:"-"`
-	Account   *Account    `json:"account"`
+	Account   *Account    `json:"account,omitempty"`
 	AccountID int         `json:"-"`
 
 	Name            string `json:"name"`
@@ -26,12 +26,10 @@ type Feed struct {
 	FPS float64 `json:"fps" gorm:"-"`
 }
 
-// AfterFind .
-func (f *Feed) AfterFind() error {
+// PostFetch .
+func (f *Feed) PostFetch() {
 	f.FPS = ResolutionMap[f.InputResolution].FrameRate
 
 	// TODO: Need to fix this
 	f.Timezone = f.Timezone + "(GMT +0530)"
-
-	return nil
 }

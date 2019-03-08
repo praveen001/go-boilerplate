@@ -86,8 +86,8 @@ func (s *Segment) AfterFind(db *gorm.DB) error {
 		return err
 	}
 
-	s.SOM = s.Offset + s.Media.Duration
-	s.EOM = s.Offset + s.Duration + s.Media.Duration
+	s.SOM = s.Offset + s.Media.TCIn
+	s.EOM = s.Offset + s.Duration + s.Media.TCIn
 
 	return nil
 }

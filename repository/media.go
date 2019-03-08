@@ -26,11 +26,11 @@ func (r *MediaRepository) FilterMedia(feed *models.Feed, params url.Values) (map
 	if categories, ok := params["category"]; ok {
 		catValues := make([]int, len(categories))
 		for i, c := range categories {
-			catValues[i] = models.MediaCategory[c]
+			catValues[i] = models.MediaCategoryReverse[c]
 		}
 		tx = tx.Where("category IN (?)", catValues)
 	} else {
-		tx = tx.Where("category = ?", models.MediaCategory["media"])
+		tx = tx.Where("category = ?", models.MediaCategoryReverse["media"])
 	}
 
 	if search := params.Get("search"); search != "" {
@@ -58,8 +58,8 @@ func (r *MediaRepository) FilterMedia(feed *models.Feed, params url.Values) (map
 	}
 
 	resp := map[string]interface{}{
-		"media": medias,
-		"total": total,
+		"medias": medias,
+		"total":  total,
 	}
 
 	return resp, nil

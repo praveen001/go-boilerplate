@@ -49,7 +49,16 @@ import (
 
 //
 var (
-	MediaCategory = map[string]int{
+	MediaCategory = map[int]string{
+		1: "media",
+		2: "rescue",
+		3: "graphics",
+		4: "subtitles",
+		5: "audio",
+		7: "signatures",
+		8: "media_segment",
+	}
+	MediaCategoryReverse = map[string]int{
 		"media":         1,
 		"rescue":        2,
 		"graphics":      3,
@@ -67,7 +76,7 @@ type Media struct {
 	UpdatedAt time.Time `json:"-"`
 
 	// Belongs to many Feeds
-	Feeds []*Feed `json:"feeds" gorm:"MANY2MANY:feeds_media"`
+	Feeds []*Feed `json:"-" gorm:"MANY2MANY:feeds_media"`
 
 	// Has many segments
 	Segments []*Segment `json:"segments"`
@@ -77,20 +86,31 @@ type Media struct {
 	Duration        int    `json:"duration" gorm:"COLUMN:duration"`
 	ImagePreviewSrc string `json:"imagePreviewSrc"`
 	Status          string `json:"status" gorm:"COLUMN:aasm_state"`
-	Category        int    `json:"category"`
+	CategoryID      int    `json:"-" gorm:"COLUMN:category"`
 	TCInTimecode    string `json:"tc" gorm:"COLUMN:tc_in"`
+	Type            string `json:"type" gorm:"COLUMN:media_type"`
 
-	TCIn int `json:"tcIn" gorm:"-"`
+	TCIn     int    `json:"tcIn" gorm:"-"`
+	Category string `json:"category"`
+
+	// TODO:
+	// *Dynamic should be read from meta (-_-)
+	Dynamic bool `json:"dynamic" gorm:"-"`
 }
 
 // AfterFind .
 func (m *Media) AfterFind(db *gorm.DB) error {
+	m.Category = MediaCategory[m.CategoryID]
+
 	if err := db.Model(m).Related(&m.Feeds, "Feeds").Error; err != nil {
 		return err
 	}
 
-	feed := m.Feeds[0]
-	m.TCIn = utils.TimecodeToFrames(m.TCInTimecode, feed.FPS)
+	if len(m.Feeds) != 0 {
+		feed := m.Feeds[0]
+		feed.PostFetch()
+		m.TCIn = utils.TimecodeToFrames(m.TCInTimecode, feed.FPS)
+	}
 
 	return nil
 }

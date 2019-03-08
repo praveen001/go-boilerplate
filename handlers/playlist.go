@@ -42,6 +42,14 @@ func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	date, err := params.GetDate(r, "date")
+	if err != nil {
+		h.logger.Error("Invalid date", err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	playlist.PlayOn = date
+
 	if err := h.playlist.Create(playlist); err != nil {
 		h.logger.Error("Unable to create playlist", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -85,7 +93,7 @@ func (h *PlaylistHandler) Delete(w http.ResponseWriter, r *http.Request) {
 func (h *PlaylistHandler) ReadByDate(w http.ResponseWriter, r *http.Request) {
 	feed := ctx.GetFeed(r.Context())
 
-	date, err := params.GetInt(r, "date")
+	date, err := params.GetDate(r, "date")
 	if err != nil {
 		h.logger.Error("Invalid date", err.Error())
 		w.WriteHeader(http.StatusBadRequest)
