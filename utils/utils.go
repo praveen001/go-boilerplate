@@ -51,3 +51,9 @@ func TimecodeMsecToMsec(tc string, fps float64) int {
 func MsecToFrames(msec int, fps float64) int {
 	return int(float64(msec) / fps)
 }
+
+// FramesToMsec .
+func FramesToMsec(frames int, fps float64) int {
+	oneFrameDuration := 1000 / fps
+	return int(float64(frames) * oneFrameDuration)
+}

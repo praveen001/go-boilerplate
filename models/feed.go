@@ -18,10 +18,11 @@ type Feed struct {
 	Account   *Account    `json:"account,omitempty"`
 	AccountID int         `json:"-"`
 
-	Name            string `json:"name"`
-	Code            string `json:"code" gorm:"COLUMN:channel_code"`
-	Timezone        string `json:"timezone" gorm:"COLUMN:time_zone"`
-	InputResolution string `json:"-" gorm:"COLUMN:input_video_resolution"`
+	Name               string `json:"name"`
+	Code               string `json:"code" gorm:"COLUMN:channel_code"`
+	Timezone           string `json:"timezone" gorm:"COLUMN:time_zone"`
+	BroadcastStartTime string `json:"broadcastStartTime"`
+	InputResolution    string `json:"-" gorm:"COLUMN:input_video_resolution"`
 
 	FPS float64 `json:"fps" gorm:"-"`
 }

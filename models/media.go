@@ -81,17 +81,18 @@ type Media struct {
 	// Has many segments
 	Segments []*Segment `json:"segments"`
 
-	AssetID         string `json:"assetId"`
-	Title           string `json:"title"`
-	Duration        int    `json:"duration" gorm:"COLUMN:duration"`
-	ImagePreviewSrc string `json:"imagePreviewSrc"`
-	Status          string `json:"status" gorm:"COLUMN:aasm_state"`
-	CategoryID      int    `json:"-" gorm:"COLUMN:category"`
-	TCInTimecode    string `json:"tc" gorm:"COLUMN:tc_in"`
-	Type            string `json:"type" gorm:"COLUMN:media_type"`
+	AssetID          string `json:"assetId"`
+	Title            string `json:"title"`
+	DurationInFrames int    `json:"-" gorm:"COLUMN:duration"`
+	ImagePreviewSrc  string `json:"imagePreviewSrc"`
+	Status           string `json:"status" gorm:"COLUMN:aasm_state"`
+	CategoryID       int    `json:"-" gorm:"COLUMN:category"`
+	TCInTimecode     string `json:"tc" gorm:"COLUMN:tc_in"`
+	Type             string `json:"type" gorm:"COLUMN:media_type"`
 
 	TCIn     int    `json:"tcIn" gorm:"-"`
-	Category string `json:"category"`
+	Category string `json:"category" gorm:"-"`
+	Duration int    `json:"duration" gorm:"-"`
 
 	// TODO:
 	// *Dynamic should be read from meta (-_-)
@@ -110,6 +111,7 @@ func (m *Media) AfterFind(db *gorm.DB) error {
 		feed := m.Feeds[0]
 		feed.PostFetch()
 		m.TCIn = utils.TimecodeToFrames(m.TCInTimecode, feed.FPS)
+		m.Duration = utils.FramesToMsec(m.DurationInFrames, feed.FPS)
 	}
 
 	return nil

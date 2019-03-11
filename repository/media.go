@@ -41,13 +41,15 @@ func (r *MediaRepository) FilterMedia(feed *models.Feed, params url.Values) (map
 	total := 0
 	tx = tx.Preload("Segments").Related(&medias, "Medias").Find(&medias).Count(&total)
 
-	if limit := params.Get("limit"); limit != "" {
+	limit := params.Get("limit")
+	if limit != "" {
 		tx = tx.Limit(limit)
 	} else {
 		tx = tx.Limit(25)
 	}
 
-	if offset := params.Get("offset"); offset != "" {
+	offset := params.Get("offset")
+	if offset != "" {
 		tx = tx.Offset(offset)
 	} else {
 		tx = tx.Offset(0)
@@ -60,6 +62,8 @@ func (r *MediaRepository) FilterMedia(feed *models.Feed, params url.Values) (map
 	resp := map[string]interface{}{
 		"medias": medias,
 		"total":  total,
+		"offset": offset,
+		"limit":  limit,
 	}
 
 	return resp, nil
