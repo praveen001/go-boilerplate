@@ -39,7 +39,8 @@ func (r *MediaRepository) FilterMedia(feed *models.Feed, params url.Values) (map
 	}
 
 	total := 0
-	tx = tx.Preload("Segments").Related(&medias, "Medias").Find(&medias).Count(&total)
+	tx = tx.Preload("Segments").Related(&medias, "Medias").Find(&medias)
+	tx.Count(&total)
 
 	limit := params.Get("limit")
 	if limit != "" {
