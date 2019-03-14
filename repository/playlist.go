@@ -19,7 +19,7 @@ func NewPlaylistRepository(db *gorm.DB) *PlaylistRepository {
 
 // Create .
 func (r *PlaylistRepository) Create(playlist *models.Playlist) error {
-	return r.db.Create(playlist).Error
+	return r.db.Save(playlist).Error
 }
 
 // Read .

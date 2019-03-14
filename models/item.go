@@ -34,7 +34,7 @@ type Item struct {
 	AssetID   string     `json:"assetId"`
 	Title     string     `json:"title"`
 	SegmentID int        `json:"segmentId"`
-	StartTime int        `json:"startTime"`
+	StartTime int64        `json:"startTime"`
 	Duration  int        `json:"duration"`
 	Locked    bool       `json:"locked"`
 	Status    ItemStatus `json:"status"`

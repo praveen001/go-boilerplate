@@ -15,7 +15,7 @@ func (cr *CustomRouter) playlistRouter() *chi.Mux {
 	r.Route("/{playlistID}", func(r chi.Router) {
 		r.Use(playlist.Preload)
 		r.Get("/", playlist.Read)
-		r.Put("/", playlist.Update)
+		r.Post("/", playlist.Update)
 		r.Delete("/", playlist.Delete)
 	})
 

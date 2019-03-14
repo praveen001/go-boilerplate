@@ -15,6 +15,7 @@ type DB struct {
 	Feed     *repository.FeedRepository
 	Media    *repository.MediaRepository
 	Playlist *repository.PlaylistRepository
+	Item     *repository.ItemRepository
 }
 
 // initDB initializes DB connections, and prepares all the Models by providing them with the db connection
@@ -33,5 +34,6 @@ func (c *Context) initDB() {
 		Feed:     repository.NewFeedRepository(db),
 		Media:    repository.NewMediaRepository(db),
 		Playlist: repository.NewPlaylistRepository(db),
+		Item:     repository.NewItemRepository(db),
 	}
 }

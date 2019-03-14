@@ -17,6 +17,7 @@ type PlaylistHandler struct {
 	logger *app.Logger
 
 	playlist *repository.PlaylistRepository
+	item     *repository.ItemRepository
 }
 
 // NewPlaylistHandler .
@@ -25,6 +26,7 @@ func NewPlaylistHandler(c *app.Context) *PlaylistHandler {
 		logger: c.Logger,
 
 		playlist: c.DB.Playlist,
+		item:     c.DB.Item,
 	}
 }
 
@@ -64,18 +66,22 @@ func (h *PlaylistHandler) Read(w http.ResponseWriter, r *http.Request) {
 
 // Update .
 func (h *PlaylistHandler) Update(w http.ResponseWriter, r *http.Request) {
-	// playlist := ctx.GetPlaylist(r.Context())
+	playlist := ctx.GetPlaylist(r.Context())
 
-	// oldItems := playlist.Items
-	// playlist.Items = []*models.Item{}
+	oldItems := playlist.Items
+	playlist.Items = []*models.Item{}
 
-	// if err := json.NewDecoder(r.Body).Decode(playlist); err != nil {
-	// 	h.logger.Error("Invalid playlist", err.Error())
-	// 	return
-	// }
-	// h.playlist.Save(playlist)
+	if err := json.NewDecoder(r.Body).Decode(playlist); err != nil {
+		h.logger.Error("Invalid playlist", err.Error())
+		return
+	}
+	h.playlist.Create(playlist)
 
-	// go h.item.DeleteMulti(oldItems)
+	oldIds := make([]int, len(oldItems))
+	for i, item := range oldItems {
+		oldIds[i] = item.ID
+	}
+	go h.item.BatchDelete(oldIds)
 }
 
 // Delete .
