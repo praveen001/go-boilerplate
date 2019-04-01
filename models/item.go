@@ -61,6 +61,7 @@ type Item struct {
 	Duration    int         `json:"duration"`
 	Locked      bool        `json:"locked"`
 	Status      ItemStatus  `json:"status"`
+	Type        string      `json:"type"`
 	ItemType    ItemType    `json:"itemType"`
 	AssetStatus MediaStatus `json:"assetStatus"`
 }
