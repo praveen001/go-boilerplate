@@ -69,6 +69,31 @@ var (
 	}
 )
 
+// MediaStatus .
+type MediaStatus string
+
+// Media Status
+const (
+	MediaStatusInitial           MediaStatus = "initial"
+	MediaStatusNew                           = "new"
+	MediaStatusTranscoding                   = "transcoding"
+	MediaStatusTranscodingFailed             = "transcoding_failed"
+	MediaStatusTranscoded                    = "transcoded"
+	MediaStatusRecording                     = "recording"
+	MediaStatusRecorded                      = "recorded"
+	MediaStatusApproved                      = "approved"
+	MediaStatusUploading                     = "uploading"
+	MediaStatusUploaded                      = "uploaded"
+	MediaStatusQueued                        = "queued"
+	MediaStatusMetaAbsent                    = "meta_absent"
+	MediaStatusProcessing                    = "processing"
+	MediaStatusInvalid                       = "invalid"
+	MediaStatusQCFailed                      = "qc_failed"
+	MediaStatusFailed                        = "failed"
+	MediaStatusArchived                      = "archived"
+	MediaStatusDeleted                       = "deleted"
+)
+
 // Media .
 type Media struct {
 	ID        int       `json:"id" gorm:"PRIMARY_KEY"`
@@ -81,14 +106,14 @@ type Media struct {
 	// Has many segments
 	Segments []*Segment `json:"segments"`
 
-	AssetID          string `json:"assetId"`
-	Title            string `json:"title"`
-	DurationInFrames int    `json:"-" gorm:"COLUMN:duration"`
-	ImagePreviewSrc  string `json:"imagePreviewSrc"`
-	Status           string `json:"status" gorm:"COLUMN:aasm_state"`
-	CategoryID       int    `json:"-" gorm:"COLUMN:category"`
-	TCInTimecode     string `json:"tc" gorm:"COLUMN:tc_in"`
-	Type             string `json:"type" gorm:"COLUMN:media_type"`
+	AssetID          string      `json:"assetId"`
+	Title            string      `json:"title"`
+	DurationInFrames int         `json:"-" gorm:"COLUMN:duration"`
+	ImagePreviewSrc  string      `json:"imagePreviewSrc"`
+	Status           MediaStatus `json:"status" gorm:"COLUMN:aasm_state"`
+	CategoryID       int         `json:"-" gorm:"COLUMN:category"`
+	TCInTimecode     string      `json:"tc" gorm:"COLUMN:tc_in"`
+	Type             string      `json:"type" gorm:"COLUMN:media_type"`
 
 	TCIn     int    `json:"tcIn" gorm:"-"`
 	Category string `json:"category" gorm:"-"`

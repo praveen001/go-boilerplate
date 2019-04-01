@@ -7,7 +7,30 @@ type ItemStatus string
 
 //
 const (
-	ItemStatusOk ItemStatus = "ok"
+	ItemStatusPresent                ItemStatus = "Present"
+	ItemStatusLive                              = "Live"
+	ItemStatusInvalid                           = "Invalid"
+	ItemStatusProcessing                        = "Processing"
+	ItemStatusNotPresent                        = "Not Present"
+	ItemStatusSegmentAbsent                     = "Segment Absent"
+	ItemStatusIncorrectSOM                      = "Incorrect SOM"
+	ItemStatusDurationMismatch                  = "Duration Mismatch"
+	ItemStatusSmallDuration                     = "Small Duration"
+	ItemStatusInvalidArguments                  = "Invalid Arguments"
+	ItemStatusFileOffsetAbsent                  = "File Offset Absent"
+	ItemStatusIncorrectStartTime                = "Incorrect Start Time"
+	ItemStatusSubtitleAbsent                    = "Subtitle Absent"
+	ItemStatusHole                              = "Hole"
+	ItemStatusSkipped                           = "Skipped"
+	ItemStatusRescue                            = "Rescue"
+	ItemStatusDisable                           = "Disable"
+	ItemStatusInvalidType                       = "Invalid Type"
+	ItemStatusInvalidDynamicAsset               = "Invalid Dynamic Asset"
+	ItemStatusInvalidDynamicTemplate            = "Invalid Dynamic Template"
+	ItemStatusInvalidDynamcParams               = "Invalid Dynamic Params"
+	ItemStatusInvalidSCTEParams                 = "Invalid SCTE Params"
+	ItemStatusInvalidLiveParams                 = "Invalid Live Trigger Params"
+	ItemStatusDynamicAssetAbsent                = "Dynamic Asset Absent"
 )
 
 // ItemType .
@@ -31,14 +54,15 @@ type Item struct {
 	Playlist   *Playlist `json:"-"`
 	PlaylistID int       `json:"-"`
 
-	AssetID   string     `json:"assetId"`
-	Title     string     `json:"title"`
-	SegmentID int        `json:"segmentId"`
-	StartTime int64        `json:"startTime"`
-	Duration  int        `json:"duration"`
-	Locked    bool       `json:"locked"`
-	Status    ItemStatus `json:"status"`
-	ItemType  ItemType   `json:"itemType"`
+	AssetID     string      `json:"assetId"`
+	Title       string      `json:"title"`
+	SegmentID   int         `json:"segmentId"`
+	StartTime   int64       `json:"startTime"`
+	Duration    int         `json:"duration"`
+	Locked      bool        `json:"locked"`
+	Status      ItemStatus  `json:"status"`
+	ItemType    ItemType    `json:"itemType"`
+	AssetStatus MediaStatus `json:"assetStatus"`
 }
 
 // TableName .
