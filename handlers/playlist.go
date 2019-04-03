@@ -57,6 +57,11 @@ func (h *PlaylistHandler) Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	res := &struct {
+		ID int `json:"id"`
+	}{playlist.ID}
+	json.NewEncoder(w).Encode(res)
 }
 
 // Read .
