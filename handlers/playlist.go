@@ -87,6 +87,11 @@ func (h *PlaylistHandler) Update(w http.ResponseWriter, r *http.Request) {
 		oldIds[i] = item.ID
 	}
 	go h.item.BatchDelete(oldIds)
+
+	res := &struct {
+		ID int `json:"id"`
+	}{playlist.ID}
+	json.NewEncoder(w).Encode(res)
 }
 
 // Delete .
