@@ -109,7 +109,8 @@ type Media struct {
 	AssetID          string      `json:"assetId"`
 	Title            string      `json:"title"`
 	DurationInFrames int         `json:"-" gorm:"COLUMN:duration"`
-	ImagePreviewSrc  string      `json:"imagePreviewSrc"`
+	ImagePreviewSrc  string      `json:"imagePreviewSrc" gorm:"COLUMN:image_preview_src"`
+	VideoPreviewSrc  string      `json:"videoPreviewSrc" gorm:"COLUMN:video_preview_src"`
 	Status           MediaStatus `json:"status" gorm:"COLUMN:aasm_state"`
 	CategoryID       int         `json:"-" gorm:"COLUMN:category"`
 	TCInTimecode     string      `json:"tc" gorm:"COLUMN:tc_in"`

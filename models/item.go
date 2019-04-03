@@ -54,16 +54,18 @@ type Item struct {
 	Playlist   *Playlist `json:"-"`
 	PlaylistID int       `json:"-"`
 
-	AssetID     string      `json:"assetId"`
-	Title       string      `json:"title"`
-	SegmentID   int         `json:"segmentId"`
-	StartTime   int64       `json:"startTime"`
-	Duration    int         `json:"duration"`
-	Locked      bool        `json:"locked"`
-	Status      ItemStatus  `json:"status"`
-	Type        string      `json:"type"`
-	ItemType    ItemType    `json:"itemType"`
-	AssetStatus MediaStatus `json:"assetStatus"`
+	AssetID         string      `json:"assetId"`
+	Title           string      `json:"title"`
+	SegmentID       int         `json:"segmentId"`
+	StartTime       int64       `json:"startTime"`
+	Duration        int         `json:"duration"`
+	Locked          bool        `json:"locked"`
+	Status          ItemStatus  `json:"status"`
+	Type            string      `json:"type"`
+	ItemType        ItemType    `json:"itemType"`
+	AssetStatus     MediaStatus `json:"assetStatus"`
+	ImagePreviewSrc string      `json:"imagePreviewSrc"`
+	VideoPreviewSrc string      `json:"videoPreviewSrc"`
 }
 
 // TableName .
